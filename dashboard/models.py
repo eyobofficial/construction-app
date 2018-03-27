@@ -8,6 +8,16 @@ from . import managers
 import datetime
 
 
+def status_label(**kwargs):
+    btn = kwargs.get('btn', 'btn-default')
+    status_message = kwargs.get('status', 'Not Available')
+    output = '<span class="btn btn-sm btn-round {}">{}</span>'.format(
+        btn,
+        status_message,
+    )
+    return output
+
+
 class CustomUser(AbstractUser):
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
     job_title = models.CharField(max_length=100)
@@ -175,12 +185,15 @@ class Project(models.Model):
     objects = models.Manager()
     my_projects = managers.ProjectManager()
 
-    def current_status(self):
+    def get_last_status(self):
+        """
+        Get the last updated project status
+        """
         status_list = self.project_status.all().order_by('-updated_at')
 
         try:
-            last_status = status_list[0].status
-        except:
+            last_status = status_list[0]
+        except IndexError:
             last_status = None
         return last_status
 
@@ -202,10 +215,10 @@ class ProjectStatus(models.Model):
     """
     PROJECT_STATUS_CHOICES = (
         ('active', 'Active'),
-        ('defect', 'Defect Liability Period'),
+        ('defect', 'On DLP'),
         ('closed', 'Closed'),
         ('suspended', 'Suspended'),
-        ('closed', 'Closed'),
+        ('terminated', 'Terminated'),
     )
     project = models.ForeignKey(
         Project,
@@ -227,6 +240,33 @@ class ProjectStatus(models.Model):
 
     class Meta:
         ordering = ['-updated_at', 'project', ]
+
+    def html_label(self):
+        if self.status == 'active':
+            return status_label(
+                btn='btn-success',
+                status=self.get_status_display()
+            )
+        elif self.status == 'defect':
+            return status_label(
+                btn='btn-info',
+                status=self.get_status_display()
+            )
+        elif self.status == 'suspended':
+            return status_label(
+                btn='btn-warning',
+                status=self.get_status_display()
+            )
+        elif self.status == 'terminated':
+            return status_label(
+                btn='btn-danger',
+                status=self.get_status_display()
+            )
+        else:
+            return status_label(
+                btn='btn-default',
+                status=self.get_status_display()
+            )
 
     def __str__(self):
         return 'Status of {}'.format(self.project)
