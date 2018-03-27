@@ -1,8 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.urls import reverse
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.conf import settings
 
 from . import managers
@@ -169,6 +167,7 @@ class Project(models.Model):
         null=True, blank=True,
         help_text='User yyyy-mm-dd format',
     )
+    is_published = models.BooleanField('Published status', default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
