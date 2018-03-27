@@ -6,5 +6,7 @@ app_name = 'dashboard'
 
 
 urlpatterns = [
-    path('', projects.IndexView.as_view(), name='index'),
+    
+    # Projects
+    path('projects/', projects.ProjectList.as_view(), name='project-list'),
 ]

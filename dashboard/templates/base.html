@@ -22,10 +22,10 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
 
   <!-- Theme Stylesheet -->
-  <link rel="stylesheet" href="{% static '/assets/css/material-dashboard.min.css%3Fv=2.0.1.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/css/material-dashboard.min.css' %}">
 
   <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="{% static '/assets/css/custom.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/css/custom.css' %}">
 
   {% block page_style %}{% endblock page_style %}
 </head>
@@ -411,12 +411,8 @@
 
         <div class="content">
           <div class="container-fluid">
-            <div class="row">
-              <div class="col-md-12">
-                {% block content %}
-                {% endblock content %}
-              </div>
-            </div><!-- /.row -->
+            {% block content %}
+            {% endblock content %}
         </div>
     {% endblock main_panel %}
     </div><!-- .main-panel -->
@@ -488,7 +484,7 @@
   <script src="{ % static 'assets/assets-for-demo/js/modernizr.js' %}"></script>
 
   <!-- Material Kit Core initialisations of plugins and Bootstrap Material Design Library -->
-  <script src="{% static 'assets/js/material-dashboard.js%3Fv=2.0.1' %}"></script>
+  <script src="{% static 'assets/js/material-dashboard.js' %}"></script>
 
   <!-- Include a polyfill for ES6 Promises (optional) for IE11, UC Browser and Android browser support SweetAlert -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/2.4.1/core.js"></script>
@@ -529,6 +525,8 @@
   <!--  Full Calendar Plugin, full documentation here: https://github.com/fullcalendar/fullcalendar    -->
   <script src="{% static 'assets/js/plugins/fullcalendar.min.js' %}"></script>
 
+  <!-- Custom Script -->
+  <script src="{% static 'assets/js/custom/script.js' %}"></script>
   {% block page_script %}{% endblock page_script %}
 </body>   
 </html>

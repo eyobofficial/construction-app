@@ -175,6 +175,15 @@ class Project(models.Model):
     objects = models.Manager()
     my_projects = managers.ProjectManager()
 
+    def current_status(self):
+        status_list = self.project_status.all().order_by('-updated_at')
+
+        try:
+            last_status = status_list[0].status
+        except:
+            last_status = None
+        return last_status
+
     def save(self, *args, **kwargs):
         if self.commencement_date and self.period:
             self.completion_date = self.commencement_date+ datetime.timedelta(self.period)
@@ -198,7 +207,11 @@ class ProjectStatus(models.Model):
         ('suspended', 'Suspended'),
         ('closed', 'Closed'),
     )
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(
+        Project,
+        related_name='project_status',
+        on_delete=models.CASCADE
+    )
     status = models.CharField(
         'Project Status',
         max_length=60,
