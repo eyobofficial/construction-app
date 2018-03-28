@@ -15,7 +15,7 @@
                     <!--        Here you can write extra buttons/actions for the toolbar              -->
                 </div>
                 <div class="material-datatables">
-                    <table id="datatables" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                    <table id="projectDatatables" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
                         <thead>
                             <tr>
                                 <th>Status</th>
@@ -63,4 +63,14 @@
         </div><!--  end card  -->
     </div>
 </div><!-- /.row -->
+
+{% if user.is_project_admin %}
+<div class="row">
+    <div class="col-sm-12">
+        <a href="#" title="Add new project" class="btn btn-sm btn-outline btn-primary pull-right">
+           <span class="fa fa-plus-circle"></span>&nbsp; New Project 
+        </a>
+    </div>
+</div>
+{% endif %}
 {% endblock content %}

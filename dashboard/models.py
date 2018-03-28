@@ -33,25 +33,34 @@ class CustomUser(AbstractUser):
         blank=True
     )
     is_project_admin = models.BooleanField(
-        'Admin Project Detals',
+        'Administer Project Detals',
         default=False,
     )
     is_insurance_admin = models.BooleanField(
-        'Admin Insurance Details',
+        'Administer Insurance Details',
         default=False,
     )
     is_variation_admin = models.BooleanField(
-        'Admin Variation Details',
+        'Administer Variation Details',
         default=False,
     )
     is_claim_admin = models.BooleanField(
-        'Admin Time Claim Details',
+        'Administer Time Claim Details',
         default=False,
     )
     is_payment_admin = models.BooleanField(
-        'Admin Payment Details',
+        'Administer Payment Details',
         default=False,
     )
+
+    def get_screen_name(self):
+        """
+        Returns either the user's full name (if is set) or their username
+        """
+        if self.get_full_name():
+            return self.get_full_name()
+        else:
+            return self.username
 
 
 class Contractor(models.Model):
