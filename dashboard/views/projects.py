@@ -16,5 +16,5 @@ class ProjectList(generic.ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super(ProjectList, self).get_context_data(*args, **kwargs)
-        context['page_name'] = 'projects'
+        context['page_name'] = 'Projects'
         return context

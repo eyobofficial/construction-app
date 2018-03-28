@@ -58,7 +58,6 @@ class Contractor(models.Model):
     """
     Represents a Contractor Firm
     """
-    # package = models.ForeignKey(Package, on_delete=models.CASCADE)
     full_name = models.CharField(
         max_length=100,
         help_text='Official full name of the Contractor firm',
@@ -151,7 +150,7 @@ class Project(models.Model):
     contract_amount = models.DecimalField(
         max_digits=16, decimal_places=2,
         null=True, blank=True,
-        help_text='Project contract amount in ETB',
+        help_text='Project contract amount in ETB (before VAT)',
     )
     signing_date = models.DateField(
         'Agreement Signing Date',
@@ -168,7 +167,7 @@ class Project(models.Model):
         null=True, blank=True,
         help_text='User yyyy-mm-dd format',
     )
-    period = models.IntegerField(
+    period = models.PositiveIntegerField(
         'Contract Period',
         null=True, blank=True,
         help_text='Project life time in calendar days')
