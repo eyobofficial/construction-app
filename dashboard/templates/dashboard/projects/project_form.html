@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                {% if project %}
+                <h4 class="title">Update Project</h4>
+                {% else %}
+                 <h4 class="title">New Project</h4>
+                {% endif %}
+                <p class="category hidden-xs">Description and summary of the construction project</p>
+            </div>
+            <div class="card-content">
+                <div class="row">
+                    <div class="col-sm-8 col-sm-offset-2">
+                       <form method="POST">
+                           {% csrf_token %}
+                           {% crispy form form.helper %}                     
+                    </div>
+                </div><!-- /.row -->
+            </div><!-- /.card-content -->
+        </div><!-- /.card -->
+    </div>
+</div><!-- /.row -->
+
+<div class="row">
+    <div class="col-sm-12 bottom-btn-container">
+        <button type="submit" title="Save Changes" class="btn btn-primary">
+            <span class="fa fa-edit"></span>&nbsp; Save 
+        </button>
+        
+        {% if variation %}
+        <a href="{% url 'dashboard:project-detail' project.id %}" title="Discard Chages" class="btn btn-danger pull-right">
+            Cancel
+        </a>
+        {% else %}
+        <a href="{% url 'dashboard:project-list' %}" title="Discard Chages" class="btn btn-danger pull-right">
+            Cancel
+        </a>
+        {% endif %}
+    </div>
+</div>
+</form>
+{% endblock %}

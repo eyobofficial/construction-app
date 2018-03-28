@@ -16,10 +16,11 @@ class CustomUserAdmin(admin.ModelAdmin):
     search_fields = ('email', 'username', 'first_name', 'last_name', )
 
 
-@admin.register(models.Contractor)
-class ContractorAdmin(admin.ModelAdmin):
-    list_display = ('full_name', 'short_name', )
-    search_fields = ('full_name', 'short_name')
+@admin.register(models.Config)
+class ConfigAdmin(admin.ModelAdmin):
+    list_display = ('name', 'value', 'config_type', )
+    list_filter = ('config_type', )
+    search_fields = ('name', 'value', )
 
 
 @admin.register(models.Consultant)
@@ -28,14 +29,9 @@ class ConsultantAdmin(admin.ModelAdmin):
     search_fields = ('full_name', 'short_name')
 
 
-class ProjectStatusInline(admin.TabularInline):
-    model = models.ProjectStatus
-
-
 @admin.register(models.Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('short_name', 'consultant', 'construction_type', )
-    list_filter = ('construction_type', 'consultant', )
-    search_fields = ('full_name', 'short_name', 'project_code', 'description', )
-    inlines = [ProjectStatusInline, ]
+    list_display = ('short_name', 'consultant', 'construction_type', 'status',)
+    list_filter = ('construction_type', 'consultant', 'status')
+    search_fields = ('full_name', 'short_name', 'project_code', 'description',)
 

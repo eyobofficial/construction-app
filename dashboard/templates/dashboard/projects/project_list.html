@@ -25,7 +25,7 @@
                                 <th class="disabled-sorting text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tfoot>
+                        <!-- <tfoot>
                             <tr>
                                 <th>Status</th>
                                 <th>Project</th>
@@ -33,21 +33,17 @@
                                 <th class="text-center">Last Updated</th>
                                 <th class="text-right">Actions</th>
                             </tr>
-                        </tfoot>
+                        </tfoot> -->
                         <tbody>
                             {% for project in project_list %}
                             <tr>
                                 <td>
-                                   {% if project.get_last_status %}
-                                       {% autoescape off %}
-                                          {{ project.get_last_status.html_label }}
-                                       {% endautoescape %}
-                                   {% else %}
-                                        <span class="btn btn-round btn-sm btn-default">Not Available</span>
-                                   {% endif %}
+                                    {% autoescape off %}
+                                    {{ project.get_status_label }}
+                                    {% endautoescape %}
                                 </td>
                                 <td>
-                                    <a href="#" title="{{ project.full_name }}">{{ project.short_name }}</a>
+                                    <a href="{% url 'dashboard:project-detail' project.id %}" title="{{ project.full_name }}">{{ project.short_name }}</a>
                                 </td>
                                 <td>{{ project.get_construction_type_display }}</td>
                                 <td class="text-center">{{ project.updated_at|date:'d/m/Y' }}</td>
@@ -67,7 +63,7 @@
 {% if user.is_project_admin %}
 <div class="row">
     <div class="col-sm-12">
-        <a href="#" title="Add new project" class="btn btn-sm btn-outline btn-primary pull-right">
+        <a href="{% url 'dashboard:project-create' %}" title="Add new project" class="btn btn-sm btn-outline btn-primary pull-right">
            <span class="fa fa-plus-circle"></span>&nbsp; New Project 
         </a>
     </div>

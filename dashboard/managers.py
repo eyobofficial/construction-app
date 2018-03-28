@@ -8,28 +8,38 @@ class ProjectManager(models.Manager):
             is_published=True
         )
 
+    def unknown(self, *args, **kwargs):
+        return self.get_queryset().filter(
+            status=1
+        )
+
+    def mobilization(self, *args, **kwargs):
+        return self.get_queryset().filter(
+            status=2
+        )
+
     def active(self, *args, **kwargs):
         return self.get_queryset().filter(
-            status='active'
+            status=3
         )
 
-    def closed(self, *args, **kwargs):
+    def rectification(self, *args, **kwargs):
         return self.get_queryset().filter(
-            status='closed'
-        )
-
-    def defect(self, *args, **kwargs):
-        return self.get_queryset().filter(
-            status='defect'
+            status=4
         )
 
     def suspended(self, *args, **kwargs):
         return self.get_queryset().filter(
-            status='suspended'
+            status=5
         )
 
     def terminated(self, *args, **kwargs):
         return self.get_queryset().filter(
-            status='terminated'
+            status=6
+        )
+
+    def closed(self, *args, **kwargs):
+        return self.get_queryset().filter(
+            status=7
         )
 
