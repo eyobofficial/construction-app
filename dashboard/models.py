@@ -11,7 +11,7 @@ import datetime
 def status_label(**kwargs):
     btn = kwargs.get('btn', 'btn-default')
     status_message = kwargs.get('status', 'Not Available')
-    output = '<span class="btn btn-sm btn-round {}">{}</span>'.format(
+    output = '<span class="badge {}">{}</span>'.format(
         btn,
         status_message,
     )
@@ -216,32 +216,32 @@ class Project(models.Model):
         """
         if self.status == 2:
             return status_label(
-                btn='btn-primary',
+                btn='badge-primary',
                 status=self.get_status_display()
             )
         elif self.status == 3:
             return status_label(
-                btn='btn-success',
+                btn='badge-success',
                 status=self.get_status_display()
             )
         elif self.status == 4:
             return status_label(
-                btn='btn-info',
+                btn='badge-info',
                 status=self.get_status_display()
             )
         elif self.status == 5:
             return status_label(
-                btn='btn-warning',
+                btn='badge-warning',
                 status=self.get_status_display()
             )
         elif self.status == 6:
             return status_label(
-                btn='btn-danger',
+                btn='badge-danger',
                 status=self.get_status_display()
             )
         else:
             return status_label(
-                btn='btn-default',
+                btn='badge-default',
                 status=self.get_status_display()
             )
 
