@@ -2,34 +2,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 
-  <!-- Favicons -->
-  <link rel="apple-touch-icon" href="#">
-  <link rel="icon" href="#">
-  
-  <!-- Title -->
-  {% block title %}
-  <title>Material Dashboard by Creative Tim</title>
-  {% endblock %}
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" href="">
+    <link rel="icon" href="">
+    <title>
+      {% block title %}Material Dashboard by Creative Tim{% endblock %}
+    </title>
 
-  <meta name="description" content="">
+    <meta name="description" content="">
 
-  <!-- Fonts and icons -->
-  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
-
-  <!-- Theme Stylesheet -->
-  <link rel="stylesheet" href="{% static 'assets/css/material-dashboard.min.css' %}">
-
-  <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="{% static 'assets/css/custom.css' %}">
-
-  {% block page_style %}{% endblock page_style %}
+    <!--     Fonts and icons     -->
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="{% static 'assets/css/material-dashboard.min.css' %}">
 </head>
-<body class="">
+<body class="off-canvas-sidebar register-page">
+  {% block navbar %}
+      <!-- Navbar -->
+      <nav class="navbar navbar-expand-lg bg-primary navbar-transparent navbar-absolute" color-on-scroll="500">
+        <div class="container">
+              <div class="navbar-wrapper">
+               <a class="navbar-brand" href="register.html#pablo">Material Dashboard Pro</a>
+          </div>
+              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="sr-only">Toggle navigation</span>
+                  <span class="navbar-toggler-icon icon-bar"></span>
+                  <span class="navbar-toggler-icon icon-bar"></span>
+                  <span class="navbar-toggler-icon icon-bar"></span>
+              </button>
+              <div class="collapse navbar-collapse justify-content-end" id="navbar">
+                  <ul class="navbar-nav">
+                      <li class= "nav-item ">
+                          <a href="#" class="nav-link">
+                          <i class="material-icons">input</i>
+                          Login
+                          </a>
+                      </li>
+                  </ul>
+              </div><!-- /#navbar -->
+        </div><!-- /.container -->
+      </nav><!-- /.navbar -->
+  {% endblock navbar %}
   <div class="wrapper wrapper-full-page">
   {% block wrapper %}
     <div class="page-header register-page header-filter" filter-color="black" style="background-image: url('../../assets/img/register.jpg'); background-size: cover; background-position: top center;">
@@ -38,52 +55,48 @@
     <div class="container">
       {% block content %}
       {% endblock content %}
+
+      {% block footer %}
+      <footer class="footer ">
+        <div class="container">
+            <nav class="pull-left">
+                <ul>
+                    <li>
+                        <a href="https://www.creative-tim.com">
+                            Creative Tim
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://presentation.creative-tim.com">
+                           About Us
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://blog.creative-tim.com">
+                           Blog
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.creative-tim.com/license">
+                            Licenses
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="copyright pull-right">
+                &copy; <script>document.write(new Date().getFullYear())</script>, made with <i class="material-icons">favorite</i> by <a href="https://www.creative-tim.com" target="_blank">Creative Tim</a> for a better web.
+            </div>
+        </div>
+      </footer>
+      {% endblock footer %}
     </div><!-- /.container -->>
-    
-    {% block footer %}
-    <footer class="footer ">
-      <div class="container">
-          <nav class="pull-left">
-              <ul>
-                  <li>
-                      <a href="https://www.creative-tim.com">
-                          Creative Tim
-                      </a>
-                  </li>
-                  <li>
-                      <a href="http://presentation.creative-tim.com">
-                         About Us
-                      </a>
-                  </li>
-                  <li>
-                      <a href="http://blog.creative-tim.com">
-                         Blog
-                      </a>
-                  </li>
-                  <li>
-                      <a href="https://www.creative-tim.com/license">
-                          Licenses
-                      </a>
-                  </li>
-              </ul>
-          </nav>
-          <div class="copyright pull-right">
-              &copy; <script>document.write(new Date().getFullYear())</script>, made with <i class="material-icons">favorite</i> by <a href="https://www.creative-tim.com" target="_blank">Creative Tim</a> for a better web.
-          </div>
-      </div>
-    </footer>
-    {% endblock footer %}
   {% endblock wrapper %}
   </div><!-- /#wrapper -->
 
   <!--   Core JS Files   -->
   <script src="{% static 'assets/js/core/jquery.min.js' %}"></script>
   <script src="{% static 'assets/js/core/popper.min.js' %}"></script>
-
-
   <script src="{% static 'assets/js/bootstrap-material-design.min.js' %}"></script>
-
-
   <script src="{% static 'assets/js/plugins/perfect-scrollbar.jquery.min.js' %}"></script>
 
 
