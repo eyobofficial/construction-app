@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
-from . import forms
+from dashboard import forms
 
 
 def signup(request):
@@ -12,6 +12,7 @@ def signup(request):
     # Check if user already logged
     if request.user.is_authenticated:
         return redirect('dashboard:index')
+
     form_class = forms.SignupForm
     template_name = 'registration/signup.html'
 

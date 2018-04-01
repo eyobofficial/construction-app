@@ -6,6 +6,11 @@ from dashboard import models
 from dashboard import forms
 
 
+def index(request):
+    template_name = 'dashboard/index.html'
+    return render(request, template_name, {})
+
+
 class ProjectList(generic.ListView):
     """
     List all published projects
