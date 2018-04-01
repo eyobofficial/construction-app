@@ -1,25 +1,17 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.urls import reverse
-from django.conf import settings
+
+from . import utils
 
 from . import managers
 
 import datetime
 
 
-def status_label(**kwargs):
-    btn = kwargs.get('btn', 'btn-default')
-    status_message = kwargs.get('status', 'Not Available')
-    output = '<span class="badge {}">{}</span>'.format(
-        btn,
-        status_message,
-    )
-    return output
-
-
 class CustomUser(AbstractUser):
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    full_name = models.CharField(max_length=120)
     job_title = models.CharField(max_length=100)
     bio = models.TextField('Short Bio', null=True, blank=True)
     projects_followed = models.ManyToManyField(
@@ -53,11 +45,14 @@ class CustomUser(AbstractUser):
         default=False,
     )
 
+    def get_full_name(self):
+        return self.full_name 
+
     def get_screen_name(self):
         """
         Returns either the user's full name (if is set) or their username
         """
-        if self.get_full_name():
+        if self.full_name:
             return self.get_full_name()
         else:
             return self.username
@@ -215,32 +210,32 @@ class Project(models.Model):
         Returns a bootstrap label for status
         """
         if self.status == 2:
-            return status_label(
+            return utils.status_label(
                 btn='badge-primary',
                 status=self.get_status_display()
             )
         elif self.status == 3:
-            return status_label(
+            return utils.status_label(
                 btn='badge-success',
                 status=self.get_status_display()
             )
         elif self.status == 4:
-            return status_label(
+            return utils.status_label(
                 btn='badge-info',
                 status=self.get_status_display()
             )
         elif self.status == 5:
-            return status_label(
+            return utils.status_label(
                 btn='badge-warning',
                 status=self.get_status_display()
             )
         elif self.status == 6:
-            return status_label(
+            return utils.status_label(
                 btn='badge-danger',
                 status=self.get_status_display()
             )
         else:
-            return status_label(
+            return utils.status_label(
                 btn='badge-default',
                 status=self.get_status_display()
             )
