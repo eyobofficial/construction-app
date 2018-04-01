@@ -2,14 +2,70 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit
+from . import models
 
 from dashboard import models
 
 
 class SignupForm(UserCreationForm):
-    full_name = forms.CharField(max_length=100)
-    email = forms.CharField(max_length=100)
-    job_title = forms.CharField(label='Job Title', max_length=100)
+    username = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Username',
+            }
+        )
+    )
+    password1 = forms.CharField(
+        max_length=30,
+        widget=forms.PasswordInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Password',
+            }
+        )
+    )
+    password2 = forms.CharField(
+        max_length=30,
+        widget=forms.PasswordInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Confirm Password',
+            }
+        )
+    )
+    full_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Full Name',
+            }
+        )
+    )
+    email = forms.CharField(
+        max_length=100,
+        widget=forms.EmailInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Email',
+            }
+        )
+    )
+    job_title = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'Job Title',
+            }
+        )
+    )
+
+    class Meta:
+        model = models.CustomUser
+        fields = ('username', 'password1', 'password2', )
 
     def __init__(self, *args, **kwargs):
         super(SignupForm, self).__init__(*args, **kwargs)

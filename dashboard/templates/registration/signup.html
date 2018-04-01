@@ -46,16 +46,54 @@
                     <div class="col-md-5 mr-auto">
                         <form class="form" method="POST">
                             {% csrf_token %}
-                            {{ form|crispy }}
+
+                            {{ form.non_field_errors }}
                             
+                            <!-- Fields -->
+                            {% for field in form %}
+                            <div class="form-group has-default">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            {% if field.label == 'Username' %}
+                                            <i class="material-icons">face</i>
+
+                                            {% elif field.label == 'Password1' %}
+                                            <i class="material-icons">lock_outline</i>
+
+                                            {% elif field.label == 'Password2' %}
+                                            <i class="material-icons">lock</i>
+
+                                            {% elif field.label == 'Full name' %}
+                                            <i class="material-icons">person_outline</i>
+
+                                            {% elif field.label == 'Email' %}
+                                            <i class="material-icons">mail</i>
+
+                                            {% elif field.label == 'Job title' %}
+                                            <i class="material-icons">school</i>
+
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                    {{ field }}
+                                </div>
+                                {{ field.errors }}
+                            </div>
+                            {% endfor %}
+
+                            {% for hidden_field in form.hidden_fields %}
+                               {{ hidden_field }}
+                            {% endfor %}
+
                             <div class="text-center">
                                 <button type="submit" class="btn btn-primary btn-round mt-4">Get Started</button>
                             </div>
                         </form>
                     </div>
-                </div>
-            </div>
-        </div>
+                </div><!-- /.row -->
+            </div><!-- /.card-body -->
+        </div><!-- /.card -->
     </div>
 </div>
 {% endblock content %}

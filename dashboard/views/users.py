@@ -24,7 +24,7 @@ def signup(request):
         if form.is_valid():
             full_name = form.cleaned_data.get('full_name')
             email = form.cleaned_data.get('email')
-            job_title = form.cleaned_date.get('job_title')
+            job_title = form.cleaned_data.get('job_title')
             form.save()
             user = authenticate(
                 username=form.cleaned_data['username'],
@@ -35,16 +35,16 @@ def signup(request):
             user.job_title = job_title
             user.is_active = False
             user.save()
-            messages.success(
-                request,
-                'You have successfully created a new account.'
-            )
-            messages.warning(
-                request,
-                ('Your account must be activated before you can start '
-                 'using it. Please contact the admin to quickly activate '
-                 'your account.')
-            )
+            # messages.success(
+            #     request,
+            #     'You have successfully created a new account.'
+            # )
+            # messages.warning(
+            #     request,
+            #     ('Your account must be activated before you can start '
+            #      'using it. Please contact the admin to quickly activate '
+            #      'your account.')
+            # )
                 
             return redirect('dashboard:index')
     else:
