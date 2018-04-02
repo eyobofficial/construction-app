@@ -20,20 +20,22 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
     <link rel="stylesheet" href="{% static 'assets/css/material-dashboard.min.css' %}">
 </head>
-<body class="off-canvas-sidebar register-page">
+<body class="off-canvas-sidebar login-page">
   {% block navbar %}
       <!-- Navbar -->
       <nav class="navbar navbar-expand-lg bg-primary navbar-transparent navbar-absolute" color-on-scroll="500">
         <div class="container">
               <div class="navbar-wrapper">
-               <a class="navbar-brand" href="#">Material Dashboard Pro</a>
-          </div>
+                <a class="navbar-brand" href="#">Material Dashboard Pro</a>
+              </div>
+
               <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
                   <span class="sr-only">Toggle navigation</span>
                   <span class="navbar-toggler-icon icon-bar"></span>
                   <span class="navbar-toggler-icon icon-bar"></span>
                   <span class="navbar-toggler-icon icon-bar"></span>
               </button>
+
               <div class="collapse navbar-collapse justify-content-end" id="navbar">
                   <ul class="navbar-nav">
                       <li class= "nav-item ">
@@ -44,12 +46,13 @@
                       </li>
                   </ul>
               </div><!-- /#navbar -->
+
         </div><!-- /.container -->
       </nav><!-- /.navbar -->
   {% endblock navbar %}
   <div class="wrapper wrapper-full-page">
   {% block wrapper %}
-    <div class="page-header register-page header-filter" filter-color="black" style="background-image: url('../../assets/img/register.jpg'); background-size: cover; background-position: top center;">
+    <div class="page-header login-page header-filter" filter-color="black" style="background-image: url('../../assets/img/register.jpg'); background-size: cover; background-position: top center;">
     
       <!-- Main Content Container -->
       <div class="container">
