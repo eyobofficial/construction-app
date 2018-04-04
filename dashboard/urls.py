@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from .views import projects, users
 
 
@@ -7,7 +7,8 @@ app_name = 'dashboard'
 
 urlpatterns = [
     # Signup/Register
-    path('register', users.signup, name='register'),
+    path('account/', include('django.contrib.auth.urls')),
+    path('account/register', users.signup, name='register'),
 
     # Projects
     path('', projects.index, name='index'),
