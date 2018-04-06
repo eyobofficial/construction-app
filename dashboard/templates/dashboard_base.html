@@ -61,7 +61,7 @@
                 <div class="user-info">
                     <a data-toggle="collapse" href="dashboard.html#collapseExample" class="username">
                         <span>
-                           Eyob Tariku
+                           {{ user.get_screen_name }}
                           <b class="caret"></b>
                         </span>
                     </a>
@@ -405,10 +405,10 @@
         				</li>
 
         				<li class="nav-item">
-        					<a class="nav-link" href="dashboard.html#pablo">
-                    <i class="material-icons">person</i>
+        					<a class="nav-link" href="{% url 'dashboard:logout' %}" title="Logout">
+                    <i class="fa fa-sign-out"></i>
         					  <p>
-                      <span class="d-lg-none d-md-block">Account</span>
+                      <span class="d-lg-none d-md-block">Logout</span>
                     </p>
         					</a>
         				</li>

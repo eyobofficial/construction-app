@@ -1,17 +1,20 @@
 from django.shortcuts import render
 from django.views import generic
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from dashboard import models
 
 from dashboard import forms
 
 
+@login_required
 def index(request):
     template_name = 'dashboard/index.html'
     return render(request, template_name, {})
 
 
-class ProjectList(generic.ListView):
+class ProjectList(LoginRequiredMixin, generic.ListView):
     """
     List all published projects
     """
@@ -27,7 +30,7 @@ class ProjectList(generic.ListView):
         return context
 
 
-class ProjectDetail(generic.DetailView):
+class ProjectDetail(LoginRequiredMixin, generic.DetailView):
     """
     Display  a single published project
     """

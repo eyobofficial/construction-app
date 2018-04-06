@@ -16,7 +16,7 @@ def signup(request):
         return redirect('dashboard:index')
 
     form_class = forms.SignupForm
-    template_name = 'registration/signup.html'
+    template_name = 'registration/register.html'
 
     if request.method == 'POST':
         form = form_class(request.POST)

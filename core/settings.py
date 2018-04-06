@@ -137,8 +137,9 @@ STATICFILES_DIRS = (
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-LOGIN_URL = 'login'
+LOGIN_URL = '/dashboard/account/login'
 LOGIN_REDIRECT_URL = 'dashboard:index'
+LOGOUT_REDIRECT_URL = '/dashboard/account/login'
 
 # Setup Message Framework Bootstrap tags
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'

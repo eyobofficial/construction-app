@@ -1,3 +1,8 @@
 .login-page .form-group {
     margin-top: 1em !important;
 }
+
+.login-card .card-footer {
+    display: block !important;
+    text-align: center !important;
+}
