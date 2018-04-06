@@ -5,7 +5,7 @@ from dashboard import forms
 from dashboard import models
 
 
-def signup(request):
+def register(request):
     """
     Register a new user, login the new user and redirect to
     breakdowns:index page

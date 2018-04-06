@@ -8,7 +8,7 @@ app_name = 'dashboard'
 urlpatterns = [
     # Signup/Register
     path('account/', include('django.contrib.auth.urls')),
-    path('account/register', users.signup, name='register'),
+    path('account/register', users.register, name='register'),
 
     # Projects
     path('', projects.index, name='index'),
