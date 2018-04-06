@@ -1,8 +1,17 @@
-.login-page .form-group {
-    margin-top: 1em !important;
+.form-group {
+    margin-top: 1.1em !important;
 }
 
 .login-card .card-footer {
     display: block !important;
     text-align: center !important;
+}
+
+.fieldset-wrapper {
+    display: block;
+    margin-bottom: 3.2em !important;
+}
+
+.fieldset-wrapper legend {
+    margin-bottom: 1em;
 }

@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views import generic
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 from dashboard import models
 
@@ -43,7 +43,7 @@ class ProjectDetail(LoginRequiredMixin, generic.DetailView):
         return context
 
 
-class ProjectCreate(generic.CreateView):
+class ProjectCreate(UserPassesTestMixin, generic.CreateView):
     """
     Create a new project record
     """
@@ -52,6 +52,8 @@ class ProjectCreate(generic.CreateView):
     template_name = 'dashboard/projects/project_form.html'
     success_message = 'New project created successfully.'
 
+    def test_func(self, *args, **kwargs):
+        return self.request.user.is_project_admin
 
     def get_context_data(self, *args, **kwargs):
         context = super(ProjectCreate, self).get_context_data(*args, **kwargs)

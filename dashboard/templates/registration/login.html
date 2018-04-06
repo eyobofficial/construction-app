@@ -49,6 +49,12 @@
           <div class="container">
             <div class="col-md-4 col-sm-6 ml-auto mr-auto">
 
+                {% if user.is_authenticated and next %}
+                <div class="alert alert-rose text-center">
+                  You are trying to access unathorized page
+                </div>
+                {% endif %}
+
                 <div class="card login-card"> 
                     <div class="card-header card-header-rose card-header-icon">
                         <div class="card-icon">
@@ -59,10 +65,17 @@
                     
                     <div class="card-body ">
                         {% if form.non_field_errors %}
-                        <p class="text-danger">
-                          <i class="fa fa-bell"></i> 
-                          Please enter a correct username and password.
-                        </p>
+                           {% if next %}
+                              <p class="text-danger">
+                                <i class="fa fa-bell"></i> 
+                                Please login first
+                              </p>
+                           {% else %}
+                              <p class="text-danger">
+                                <i class="fa fa-bell"></i> 
+                                Please enter a correct username and password.
+                              </p>
+                           {% endif %}
                         {% endif %}
 
                         <form method="POST">
