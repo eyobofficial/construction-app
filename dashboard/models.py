@@ -173,17 +173,14 @@ class Project(models.Model):
     signing_date = models.DateField(
         'Agreement Signing Date',
         null=True, blank=True,
-        help_text='User yyyy-mm-dd format',
     )
     site_handover = models.DateField(
         'Site Handover Date',
         null=True, blank=True,
-        help_text='User yyyy-mm-dd format',
     )
     commencement_date = models.DateField(
         'Commenecment Date',
         null=True, blank=True,
-        help_text='User yyyy-mm-dd format',
     )
     period = models.PositiveIntegerField(
         'Contract Period',

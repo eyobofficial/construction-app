@@ -2,5 +2,9 @@
 {% load static %}
 
 {% block content %}
-   {{ project.short_name }}
+   {{ project }}
+   <br>
+   {{ project.signing_date }}
+   <br>
+   {{ project.commencement_date|date:'m/d/y' }}
 {% endblock content %}
