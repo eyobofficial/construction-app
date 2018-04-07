@@ -6,3 +6,7 @@ def status_label(**kwargs):
         status_message,
     )
     return output
+
+
+def check_project_perm(user, project, perm):
+    return project in user.projects_administered.all() and user.has_perm(perm)

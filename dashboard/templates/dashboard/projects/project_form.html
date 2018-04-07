@@ -182,9 +182,44 @@
                                     </div><!-- /.fieldset-wrapper -->
                                 </fieldset>
 
+                                <fieldset>
+                                    <div class="fieldset-wrapper">
+                                        <legend>
+                                            <i class="material-icons">bell</i>
+                                            STATUS
+                                        </legend>
+
+                                        <!-- PROJECT STATUS -->
+                                        <div class="form-group">
+                                            <label for="projetStatus" class="bmd-label-floating">
+                                               {{ form.status.label }}
+                                            </label>
+                                            {% render_field form.status class="form-control" id="projectStatus" %}
+                                            <span class="bmd-help">{{ form.status.help_text }}</span>
+
+                                            {% for error in form.status.errors %}
+                                              {{ error }}
+                                            {% endfor %}
+                                        </div><!-- /.form-group -->
+
+                                        <!-- PUBLISHED STATUS -->
+                                        <div class="form-group">
+                                            <label for="publishedStatus" class="bmd-label-floating">
+                                                {{ form.is_published.label }}
+                                            </label>
+                                            {% render_field form.is_published class="form-control" id="projectStatus" %}
+                                            <span class="bmd-help">{{ form.is_published.help_text }}</span>
+
+                                            {% for error in form.is_published.errors %}
+                                              {{ error }}
+                                            {% endfor %}
+                                        </div><!-- /.form-group -->                                  
+                                    </div><!-- /.fieldset-wrapper -->
+                                </fieldset>
+
                                 <br>
                                 <div class="form-group">
-                                    <button type="submit" class="btn btn-fill btn-rose pull-right">Submit</button>
+                                    <button type="submit" class="btn btn-outline btn-rose pull-right">Submit</button>
                                 </div><!-- /form-group -->
                             </form>
                         </div>

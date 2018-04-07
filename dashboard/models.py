@@ -130,6 +130,10 @@ class Project(models.Model):
         (6, 'Terminated'),
         (7, 'Closed'),
     )
+    PUBLISHED_STATUS_CHOICES = (
+        (True, 'Published'),
+        (False, 'Draft'),
+    )
     construction_type = models.CharField(
         max_length=60,
         choices=CONSTRUCTION_TYPE_CHOICES,
@@ -191,7 +195,11 @@ class Project(models.Model):
         null=True, blank=True,
         help_text='User yyyy-mm-dd format',
     )
-    is_published = models.BooleanField('Published status', default=False)
+    is_published = models.BooleanField(
+        'Published status',
+        choices=PUBLISHED_STATUS_CHOICES,
+        default=False,
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -201,6 +209,9 @@ class Project(models.Model):
 
     class Meta:
         ordering = ['status', '-updated_at', 'short_name', ]
+        permissions = (
+            ('admin_project', 'Administer Project'),
+        )
 
     def get_status_label(self):
         """

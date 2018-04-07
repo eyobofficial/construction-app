@@ -7,6 +7,8 @@ from dashboard import models
 
 from dashboard import forms
 
+from dashboard import utils
+
 
 @login_required
 def index(request):
@@ -43,7 +45,7 @@ class ProjectDetail(LoginRequiredMixin, generic.DetailView):
         return context
 
 
-class ProjectCreate(UserPassesTestMixin, generic.CreateView):
+class ProjectCreate(LoginRequiredMixin, UserPassesTestMixin, generic.CreateView):
     """
     Create a new project record
     """
@@ -53,7 +55,7 @@ class ProjectCreate(UserPassesTestMixin, generic.CreateView):
     success_message = 'New project created successfully.'
 
     def test_func(self, *args, **kwargs):
-        return self.request.user.is_project_admin
+        return self.request.user.has_perms('dashboard.admin_project')
 
     def get_context_data(self, *args, **kwargs):
         context = super(ProjectCreate, self).get_context_data(*args, **kwargs)
