@@ -61,3 +61,21 @@ class ProjectCreate(LoginRequiredMixin, UserPassesTestMixin, generic.CreateView)
         context = super(ProjectCreate, self).get_context_data(*args, **kwargs)
         context['page_name'] = 'Projects'
         return context
+
+
+class ProjectUpdate(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView):
+    """
+    Update an existing project record
+    """
+    form_class = forms.ProjectForm
+    model = models.Project
+    template_name = 'dashboard/projects/project_form.html'
+    success_message = 'Project updated successfully.'
+
+    def test_func(self, *args, **kwargs):
+        return self.request.user.has_perms('dashboard.admin_project')
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(ProjectUpdate, self).get_context_data(*args, **kwargs)
+        context['page_name'] = 'Projects'
+        return context
