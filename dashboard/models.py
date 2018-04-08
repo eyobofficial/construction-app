@@ -183,7 +183,7 @@ class Project(models.Model):
         null=True, blank=True,
     )
     commencement_date = models.DateField(
-        'Commenecment Date',
+        'commencement Date',
         null=True, blank=True,
     )
     period = models.PositiveIntegerField(
@@ -195,11 +195,7 @@ class Project(models.Model):
         null=True, blank=True,
         help_text='User yyyy-mm-dd format',
     )
-    is_published = models.BooleanField(
-        'Published status',
-        choices=PUBLISHED_STATUS_CHOICES,
-        default=False,
-    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

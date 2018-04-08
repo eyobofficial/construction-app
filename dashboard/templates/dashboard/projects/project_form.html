@@ -6,227 +6,217 @@
 {% block content %}
 <div class="row">
     <div class="col-sm-12">
-        <div class="card ">  
-            <div class="card-header card-header-rose card-header-icon">
-                <div class="card-icon">
-                    <i class="material-icons">assignment</i>
-                </div>
-            </div><!-- /.card-header -->
-            
-            <div class="card-body ">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-sm-8 offset-sm-2">
-                            <form method="POST" class="form-horizontal">
-                                {% csrf_token %}
-
-                                <fieldset>
-                                    <div class="fieldset-wrapper">
-                                        <legend>
-                                            <i class="material-icons">description</i>
-                                            PROJECT DETAILS
-                                        </legend>
-
-                                        <!-- PROJECT TYPE -->
-                                        <div class="form-group">
-                                            <label for="constructionType" class="bmd-label-floating">
-                                               {{ form.construction_type.label }}
-                                            </label>
-                                            {% render_field form.construction_type class="form-control" id="constructionType" %}
-                                            <span class="bmd-help">{{ form.construction_type.help_text }}</span>
-
-                                            {% for error in form.construction_type.errors %}
-                                              {{ error }}
-                                            {% endfor %}
-                                        </div><!-- /.form-group -->
-
-                                        <!-- EMPLOYER -->
-                                        <div class="form-group">
-                                            <label for="employer" class="bmd-label-floating">
-                                                {{ form.employer.label }}
-                                            </label>
-                                            {% render_field form.employer class="form-control" id="employer" %}
-                                            <span class="bmd-help">{{ form.employer.help_text }}</span>
-
-                                            {% for error in form.employer.errors %}
-                                              {{ error }}
-                                            {% endfor %}
-                                        </div><!-- /.form-group -->
-
-                                        <!-- CONSULTANT -->
-                                        <div class="form-group">
-                                            <label for="consultant" class="bmd-label-floating">
-                                                {{ form.consultant.label }}
-                                            </label>
-                                            {% render_field form.consultant class="form-control" id="consultant" %}
-                                            <span class="bmd-help">{{ form.consultant.help_text }}</span>
-
-                                            {% for error in form.consultant.errors %}
-                                              {{ error }}
-                                            {% endfor %}
-                                        </div><!-- /.form-group -->
-
-                                        <!-- PROJECT FULL NAME -->
-                                        <div class="form-group">
-                                            <label for="projectFullTitle" class="bmd-label-floating">
-                                                {{ form.full_name.label }}
-                                            </label>
-                                            {% render_field form.full_name class="form-control" id="projectFullName" %}
-                                            <span class="bmd-help">{{ form.full_name.help_text }}</span>
-
-                                            {% for error in form.full_name.errors %}
-                                              {{ error }}
-                                            {% endfor %}
-                                        </div><!-- /.form-group -->
-
-                                        <!-- PROJECT SHORT NAME -->
-                                        <div class="form-group">
-                                            <label for="projectShortTitle" class="bmd-label-floating">
-                                                {{ form.short_name.label }}
-                                            </label>
-                                            {% render_field form.short_name class="form-control" id="projectShortName" %}
-                                            <span class="bmd-help">{{ form.short_name.help_text }}</span>
-
-                                            {% for error in form.short_name.errors %}
-                                              {{ error }}
-                                            {% endfor %}
-                                        </div><!-- /.form-group -->
-
-                                        <!-- DESCRIPTION -->
-                                        <div class="form-group">
-                                            <label for="projectDescription" class="bmd-label-floating">
-                                                {{ form.description.label }}
-                                            </label>
-                                            {% render_field form.description class="form-control" id="projectDescription" %}
-                                            <span class="bmd-help">{{ form.description.help_text }}</span>
-
-                                            {% for error in form.description.errors %}
-                                              {{ error }}
-                                            {% endfor %}
-                                        </div><!-- /.form-group -->
-                                        
-                                    </div><!-- /.fieldset-wrapper -->
-                                </fieldset>
-
-                                <fieldset>
-                                    <div class="fieldset-wrapper">
-                                        <legend>
-                                            <i class="material-icons">today</i>
-                                            CONTRACTUAL SUMMARY
-                                        </legend>
-
-                                        <!-- CONTRACT AMOUNT -->
-                                        <div class="form-group">
-                                            <label for="contractAmoun" class="bmd-label-floating">
-                                               {{ form.contract_amount.label }}
-                                            </label>
-                                            {% render_field form.contract_amount class="form-control" id="contractAmount" %}
-                                            <span class="bmd-help">{{ form.contract_amount.help_text }}</span>
-
-                                            {% for error in form.contract_amount.errors %}
-                                              {{ error }}
-                                            {% endfor %}
-                                        </div><!-- /.form-group -->
-
-                                        <!-- SIGNING DATE -->
-                                        <div class="form-group">
-                                            <label for="signingDate" class="bmd-label-floating">
-                                                {{ form.signing_date.label }}
-                                            </label>
-                                            {% render_field form.signing_date class="form-control datepicker" id="signingDate" %}
-                                            <span class="bmd-help">{{ form.signing_date.help_text }}</span>
-
-                                            {% for error in form.signing_date.errors %}
-                                              {{ error }}
-                                            {% endfor %}
-                                        </div><!-- /.form-group -->
-
-                                        <!-- SITE HANDOVER DATE -->
-                                        <div class="form-group">
-                                            <label for="siteHandover" class="bmd-label-floating">
-                                                {{ form.site_handover.label }}
-                                            </label>
-                                            {% render_field form.site_handover class="form-control datepicker " id="siteHandover" %}
-                                            <span class="bmd-help">{{ form.site_handover.help_text }}</span>
-
-                                            {% for error in form.site_handover.errors %}
-                                              {{ error }}
-                                            {% endfor %}
-                                        </div><!-- /.form-group -->
-
-                                        <!-- COMMENCEMENT DATE -->
-                                        <div class="form-group">
-                                            <label for="commencementDate" class="bmd-label-floating">
-                                                {{ form.commencement_date.label }}
-                                            </label>
-                                            {% render_field form.commencement_date class="form-control datepicker " id="commencementDate" %}
-                                            <span class="bmd-help">{{ form.commencement_date.help_text }}</span>
-
-                                            {% for error in form.commencement_date.errors %}
-                                              {{ error }}
-                                            {% endfor %}
-                                        </div><!-- /.form-group -->
-
-                                        <!-- CONSTRUCTION PERIOD -->
-                                        <div class="form-group">
-                                            <label for="period" class="bmd-label-floating">
-                                                {{ form.period.label }}
-                                            </label>
-                                            {% render_field form.period class="form-control" id="period" %}
-                                            <span class="bmd-help">{{ form.period.help_text }}</span>
-
-                                            {% for error in form.period.errors %}
-                                              {{ error }}
-                                            {% endfor %}
-                                        </div><!-- /.form-group -->                                        
-                                    </div><!-- /.fieldset-wrapper -->
-                                </fieldset>
-
-                                <fieldset>
-                                    <div class="fieldset-wrapper">
-                                        <legend>
-                                            <i class="material-icons">bell</i>
-                                            STATUS
-                                        </legend>
-
-                                        <!-- PROJECT STATUS -->
-                                        <div class="form-group">
-                                            <label for="projetStatus" class="bmd-label-floating">
-                                               {{ form.status.label }}
-                                            </label>
-                                            {% render_field form.status class="form-control" id="projectStatus" %}
-                                            <span class="bmd-help">{{ form.status.help_text }}</span>
-
-                                            {% for error in form.status.errors %}
-                                              {{ error }}
-                                            {% endfor %}
-                                        </div><!-- /.form-group -->
-
-                                        <!-- PUBLISHED STATUS -->
-                                        <div class="form-group">
-                                            <label for="publishedStatus" class="bmd-label-floating">
-                                                {{ form.is_published.label }}
-                                            </label>
-                                            {% render_field form.is_published class="form-control" id="projectStatus" %}
-                                            <span class="bmd-help">{{ form.is_published.help_text }}</span>
-
-                                            {% for error in form.is_published.errors %}
-                                              {{ error }}
-                                            {% endfor %}
-                                        </div><!-- /.form-group -->                                  
-                                    </div><!-- /.fieldset-wrapper -->
-                                </fieldset>
-
-                                <br>
+        <form method="POST" class="form-horizontal">
+            {% csrf_token %}
+            <div class="card ">  
+                <div class="card-header card-header-rose card-header-icon">
+                    <div class="card-icon">
+                        <i class="material-icons">assignment</i>
+                    </div>
+                    <h4 class="card-title">Project Details</h4>
+                </div><!-- /.card-header -->
+                
+                <div class="card-body ">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-8 offset-sm-2">
+                                <!-- PROJECT TYPE -->
                                 <div class="form-group">
-                                    <button type="submit" class="btn btn-outline btn-rose pull-right">Submit</button>
-                                </div><!-- /form-group -->
-                            </form>
+                                    <label for="constructionType" class="bmd-label-floating">
+                                       {{ form.construction_type.label }}
+                                    </label>
+                                    {% render_field form.construction_type class="form-control" id="constructionType" %}
+                                    <span class="bmd-help">{{ form.construction_type.help_text }}</span>
+
+                                    {% for error in form.construction_type.errors %}
+                                      {{ error }}
+                                    {% endfor %}
+                                </div><!-- /.form-group -->
+
+                                <!-- EMPLOYER -->
+                                <div class="form-group">
+                                    <label for="employer" class="bmd-label-floating">
+                                        {{ form.employer.label }}
+                                    </label>
+                                    {% render_field form.employer class="form-control" id="employer" %}
+                                    <span class="bmd-help">{{ form.employer.help_text }}</span>
+
+                                    {% for error in form.employer.errors %}
+                                      {{ error }}
+                                    {% endfor %}
+                                </div><!-- /.form-group -->
+
+                                <!-- CONSULTANT -->
+                                <div class="form-group">
+                                    <label for="consultant" class="bmd-label-floating">
+                                        {{ form.consultant.label }}
+                                    </label>
+                                    {% render_field form.consultant class="form-control" id="consultant" %}
+                                    <span class="bmd-help">{{ form.consultant.help_text }}</span>
+
+                                    {% for error in form.consultant.errors %}
+                                      {{ error }}
+                                    {% endfor %}
+                                </div><!-- /.form-group -->
+
+                                <!-- PROJECT FULL NAME -->
+                                <div class="form-group">
+                                    <label for="projectFullTitle" class="bmd-label-floating">
+                                        {{ form.full_name.label }}
+                                    </label>
+                                    {% render_field form.full_name class="form-control" id="projectFullName" %}
+                                    <span class="bmd-help">{{ form.full_name.help_text }}</span>
+
+                                    {% for error in form.full_name.errors %}
+                                      {{ error }}
+                                    {% endfor %}
+                                </div><!-- /.form-group -->
+
+                                <!-- PROJECT SHORT NAME -->
+                                <div class="form-group">
+                                    <label for="projectShortTitle" class="bmd-label-floating">
+                                        {{ form.short_name.label }}
+                                    </label>
+                                    {% render_field form.short_name class="form-control" id="projectShortName" %}
+                                    <span class="bmd-help">{{ form.short_name.help_text }}</span>
+
+                                    {% for error in form.short_name.errors %}
+                                      {{ error }}
+                                    {% endfor %}
+                                </div><!-- /.form-group -->
+
+                                <!-- DESCRIPTION -->
+                                <div class="form-group">
+                                    <label for="projectDescription" class="bmd-label-floating">
+                                        {{ form.description.label }}
+                                    </label>
+                                    {% render_field form.description class="form-control" id="projectDescription" %}
+                                    <span class="bmd-help">{{ form.description.help_text }}</span>
+
+                                    {% for error in form.description.errors %}
+                                      {{ error }}
+                                    {% endfor %}
+                                </div><!-- /.form-group -->
+                            </div>
+                        </div><!-- /.row -->
+                    </div><!-- /.container -->
+                </div><!-- /.card-body -->
+            </div><!--/.card -->
+
+            <div class="card">
+                <div class="card-header card-header-rose card-header-icon">
+                    <div class="card-icon">
+                        <i class="material-icons">today</i>
+                    </div>
+                    <h4 class="card-title">Contractual Summary</h4>
+                </div>
+
+                <div class="card-body">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-8 offset-sm-2">
+                                <!-- CONTRACT AMOUNT -->
+                                <div class="form-group">
+                                    <label for="contractAmoun" class="bmd-label-floating">
+                                       {{ form.contract_amount.label }}
+                                    </label>
+                                    {% render_field form.contract_amount class="form-control" id="contractAmount" %}
+                                    <span class="bmd-help">{{ form.contract_amount.help_text }}</span>
+
+                                    {% for error in form.contract_amount.errors %}
+                                      {{ error }}
+                                    {% endfor %}
+                                </div><!-- /.form-group -->
+
+                                <!-- SIGNING DATE -->
+                                <div class="form-group">
+                                    <label for="signingDate" class="bmd-label-floating">
+                                        {{ form.signing_date.label }}
+                                    </label>
+                                    {% render_field form.signing_date class="form-control datepicker" id="signingDate" %}
+                                    <span class="bmd-help">{{ form.signing_date.help_text }}</span>
+
+                                    {% for error in form.signing_date.errors %}
+                                      {{ error }}
+                                    {% endfor %}
+                                </div><!-- /.form-group -->
+
+                                <!-- SITE HANDOVER DATE -->
+                                <div class="form-group">
+                                    <label for="siteHandover" class="bmd-label-floating">
+                                        {{ form.site_handover.label }}
+                                    </label>
+                                    {% render_field form.site_handover class="form-control datepicker " id="siteHandover" %}
+                                    <span class="bmd-help">{{ form.site_handover.help_text }}</span>
+
+                                    {% for error in form.site_handover.errors %}
+                                      {{ error }}
+                                    {% endfor %}
+                                </div><!-- /.form-group -->
+
+                                <!-- COMMENCEMENT DATE -->
+                                <div class="form-group">
+                                    <label for="commencementDate" class="bmd-label-floating">
+                                        {{ form.commencement_date.label }}
+                                    </label>
+                                    {% render_field form.commencement_date class="form-control datepicker " id="commencementDate" %}
+                                    <span class="bmd-help">{{ form.commencement_date.help_text }}</span>
+
+                                    {% for error in form.commencement_date.errors %}
+                                      {{ error }}
+                                    {% endfor %}
+                                </div><!-- /.form-group -->
+
+                                <!-- CONSTRUCTION PERIOD -->
+                                <div class="form-group">
+                                    <label for="period" class="bmd-label-floating">
+                                        {{ form.period.label }}
+                                    </label>
+                                    {% render_field form.period class="form-control" id="period" %}
+                                    <span class="bmd-help">{{ form.period.help_text }}</span>
+
+                                    {% for error in form.period.errors %}
+                                      {{ error }}
+                                    {% endfor %}
+                                </div><!-- /.form-group -->
+
+                            </div>
                         </div>
-                    </div><!-- /.row -->
-                </div><!-- /.container -->
-            </div><!-- /.card-body -->
-        </div><!--/.card -->
+                    </div>
+                </div>
+            </div><!-- /.card -->
+
+            <div class="card">
+                <div class="card-header card-header-rose card-header-icon">
+                    <div class="card-icon">
+                        <i class="material-icons">today</i>
+                    </div>
+                    <h4 class="card-title">Project Status</h4>
+                </div>
+
+                <div class="card-body">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-8 offset-sm-2">
+                                <!-- PROJECT STATUS -->
+                                <div class="form-group">
+                                    {% render_field form.status class="form-control" %}
+                                    <span class="bmd-help">{{ form.status.help_text }}</span>
+
+                                    {% for error in form.status.errors %}
+                                      {{ error }}
+                                    {% endfor %}
+                                </div><!-- /.form-group -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.card -->
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-rose pull-right">Submit</button>
+            </div><!-- /form-group -->
+        </form>
     </div><!-- /.col-sm-12 -->
 </div><!-- /.row -->
 {% endblock content %}

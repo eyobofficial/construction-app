@@ -43,7 +43,6 @@ class ProjectForm(BetterModelForm):
             'commencement_date',
             'period',
             'status',
-            'is_published',
         )
         fieldsets = [
             ('project_details', {

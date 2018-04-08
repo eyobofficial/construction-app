@@ -3,11 +3,6 @@ from django.db import models
 
 class ProjectManager(models.Manager):
 
-    def get_queryset(self, *args, **kwargs):
-        return super(ProjectManager, self).get_queryset().filter(
-            is_published=True
-        )
-
     def unknown(self, *args, **kwargs):
         return self.get_queryset().filter(
             status=1
