@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.urls import reverse
+from django.core.mail import send_mail
+from django.conf import settings
 
 from . import utils
 
@@ -124,14 +126,21 @@ class Notification(models.Model):
         max_length=100,
         choices=NOTIFICATION_TYPE_CHOICES,
     )
-    project = models.ForeignKey('Project', on_delete=models.CASCADE)
+    project = models.ForeignKey(
+        'Project',
+        null=True,
+        on_delete=models.CASCADE
+    )
     triggered_by = models.ForeignKey(
         CustomUser,
         null=True,
         on_delete=models.SET_NULL
     )
     notification_text = models.CharField(max_length=255)
+    email_subject = models.CharField(max_length=100)
+    email_text = models.TextField(null=True, blank=True)
     notification_url = models.URLField()
+    is_broadcast = models.BooleanField('Broadcast to all users', default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -150,6 +159,14 @@ class UserNotification(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     is_seen = models.BooleanField('Seen', default=False)
     seen_date = models.DateTimeField(null=True)
+
+    def send_email(self, *args, **kwargs):
+        return send_mail(
+            self.notification.email_subject,
+            self.notification.email_text,
+            settings.EMAIL_HOST_USER,
+            self.user.email,
+        )
 
     def __str__(self):
         return '{} for {}'.format(self.notification, self.user)
