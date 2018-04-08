@@ -112,6 +112,49 @@ class Consultant(models.Model):
         return self.short_name
 
 
+class Notification(models.Model):
+    """
+    Represents a Notification
+    """
+    NOTIFICATION_TYPE_CHOICES = (
+        ('info', 'Information'),
+        ('warning', 'Warnining'),
+    )
+    notification_type = models.CharField(
+        max_length=100,
+        choices=NOTIFICATION_TYPE_CHOICES,
+    )
+    project = models.ForeignKey('Project', on_delete=models.CASCADE)
+    triggered_by = models.ForeignKey(
+        CustomUser,
+        null=True,
+        on_delete=models.SET_NULL
+    )
+    notification_text = models.CharField(max_length=255)
+    notification_url = models.URLField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-updated_at', 'project', 'notification_type', ]
+
+    def __str__(self):
+        return self.notification_text
+
+
+class UserNotification(models.Model):
+    """
+    Notifications for based projects followed by users
+    """
+    notification = models.ForeignKey(Notification, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    is_seen = models.BooleanField('Seen', default=False)
+    seen_date = models.DateTimeField(null=True)
+
+    def __str__(self):
+        return '{} for {}'.format(self.notification, self.user)
+
+
 class Project(models.Model):
     """
     Represents a Construction Project
