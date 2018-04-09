@@ -18,12 +18,12 @@ class CustomUser(AbstractUser):
     bio = models.TextField('Short Bio', null=True, blank=True)
     projects_followed = models.ManyToManyField(
         'Project',
-        related_name='projects_followed',
+        related_name='project_followers',
         blank=True
     )
     projects_administered = models.ManyToManyField(
         'Project',
-        related_name='projects_administered',
+        related_name='projects_admins',
         blank=True
     )
     is_project_admin = models.BooleanField(
@@ -165,7 +165,7 @@ class UserNotification(models.Model):
             self.notification.email_subject,
             self.notification.email_text,
             settings.EMAIL_HOST_USER,
-            self.user.email,
+            [self.user.email, ],
         )
 
     def __str__(self):

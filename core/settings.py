@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'form_utils',
     'crispy_forms',
     'widget_tweaks',
-    'dashboard',
+    'dashboard.apps.DashboardConfig',
 ]
 
 MIDDLEWARE = [
@@ -155,3 +155,10 @@ MESSAGE_TAGS = {
 
 # Custom User Model
 AUTH_USER_MODEL = 'dashboard.CustomUser'
+
+# Email Settings
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = config('EMAIL_PORT', cast=int)
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool)

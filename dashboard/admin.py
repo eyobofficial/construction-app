@@ -35,3 +35,14 @@ class ProjectAdmin(admin.ModelAdmin):
     list_filter = ('construction_type', 'consultant', 'status')
     search_fields = ('full_name', 'short_name', 'project_code', 'description',)
 
+
+@admin.register(models.Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ('notification_type', 'notification_text', 'project', )
+    list_filter = ('notification_type', 'project', 'triggered_by', )
+    search_fields = ('notification_text', )
+
+
+@admin.register(models.UserNotification)
+class UserNotificationAdmin(admin.ModelAdmin):
+    list_display = ('notification', 'user', 'is_seen', )
