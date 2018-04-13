@@ -147,6 +147,20 @@ class Notification(models.Model):
     class Meta:
         ordering = ['-updated_at', 'project', 'notification_type', ]
 
+    def notify_followers(self, *args, **kwargs):
+        if self.is_broadcast:
+            user_list = CustomUser.objects.filter(is_active=True).exclude(pk=self.triggered_by.pk)
+        else:
+            user_list = self.project.project_followers.filter(is_active=True).exclude(pk=self.triggered_by.pk)
+
+        for user in user_list:
+            user_notification = UserNotification.objects.create(
+                notification=self,
+                user=user,
+            )
+            user_notification.save()
+            # user_notification.send_email()
+
     def __str__(self):
         return self.notification_text
 
@@ -155,7 +169,11 @@ class UserNotification(models.Model):
     """
     Notifications for based projects followed by users
     """
-    notification = models.ForeignKey(Notification, on_delete=models.CASCADE)
+    notification = models.ForeignKey(
+        Notification,
+        on_delete=models.CASCADE,
+        related_name='user_notifications'
+    )
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     is_seen = models.BooleanField('Seen', default=False)
     seen_date = models.DateTimeField(null=True)
