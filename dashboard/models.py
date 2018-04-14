@@ -8,8 +8,6 @@ from . import utils
 
 from . import managers
 
-import datetime
-
 
 class CustomUser(AbstractUser):
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
@@ -48,7 +46,7 @@ class CustomUser(AbstractUser):
     )
 
     def get_full_name(self):
-        return self.full_name 
+        return self.full_name
 
     def get_screen_name(self):
         """
@@ -107,11 +105,11 @@ class Consultant(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def get_absolute_url(self):
-        return reverse('dashboard:consultant-detail', args=[str(self.pk)])
-
     def __str__(self):
         return self.short_name
+
+    def get_absolute_url(self):
+        return reverse('dashboard:consultant-detail', args=[str(self.pk)])
 
 
 class Notification(models.Model):
@@ -223,10 +221,6 @@ class Project(models.Model):
         (6, 'Terminated'),
         (7, 'Closed'),
     )
-    PUBLISHED_STATUS_CHOICES = (
-        (True, 'Published'),
-        (False, 'Draft'),
-    )
     construction_type = models.CharField(
         max_length=60,
         choices=CONSTRUCTION_TYPE_CHOICES,
@@ -283,11 +277,6 @@ class Project(models.Model):
         'Contract Period',
         null=True, blank=True,
         help_text='Project life time in calendar days')
-    completion_date = models.DateField(
-        'Intended Completion Date',
-        null=True, blank=True,
-        help_text='User yyyy-mm-dd format',
-    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -298,9 +287,21 @@ class Project(models.Model):
 
     class Meta:
         ordering = ['status', '-updated_at', 'short_name', ]
+        get_latest_by = 'updated_at'
         permissions = (
             ('admin_project', 'Administer Project'),
         )
+
+    def __str__(self):
+        return self.short_name
+
+    def get_original_completion_date(self, *args, **kwargs):
+        """
+        Returns the project completion date
+        """
+        if self.commencement_date and self.period:
+            return self.commencement_date + self.period
+        return
 
     def get_status_label(self):
         """
@@ -337,14 +338,6 @@ class Project(models.Model):
                 status=self.get_status_display()
             )
 
-    def save(self, *args, **kwargs):
-        if self.commencement_date and self.period:
-            self.completion_date = self.commencement_date+ datetime.timedelta(self.period)
-        super(Project, self).save(*args, **kwargs)
-
     def get_absolute_url(self):
         return reverse('dashboard:project-detail', args=[str(self.pk)])
-
-    def __str__(self):
-        return self.short_name
 

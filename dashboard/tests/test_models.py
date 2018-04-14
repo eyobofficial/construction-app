@@ -30,7 +30,6 @@ class ProjectModelTests(TestCase):
         commencement_date = kwargs.get('commencement_date')
         period = kwargs.get('period')
         completion_date = kwargs.get('completion_date')
-        is_published = kwargs.get('is_published', False)
 
         project = models.Project.objects.create(
             construction_type=construction_type,
@@ -46,6 +45,5 @@ class ProjectModelTests(TestCase):
             commencement_date=commencement_date,
             period=period,
             completion_date=completion_date,
-            is_published=is_published,
         )
         return project
