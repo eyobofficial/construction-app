@@ -43,6 +43,3 @@ class NotificationAdmin(admin.ModelAdmin):
     search_fields = ('notification_text', )
 
 
-@admin.register(models.UserNotification)
-class UserNotificationAdmin(admin.ModelAdmin):
-    list_display = ('notification', 'user', 'is_seen', )

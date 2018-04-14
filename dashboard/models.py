@@ -134,60 +134,44 @@ class Notification(models.Model):
     triggered_by = models.ForeignKey(
         CustomUser,
         null=True,
-        on_delete=models.SET_NULL
+        on_delete=models.SET_NULL,
+        related_name='triggered_notifications'
     )
+    notify_to = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name='received_notifications'
+    )
+    notification_title = models.CharField(max_length=120)
     notification_text = models.CharField(max_length=255)
-    email_subject = models.CharField(max_length=100)
-    email_text = models.TextField(null=True, blank=True)
     notification_url = models.URLField()
-    is_broadcast = models.BooleanField('Broadcast to all users', default=False)
+    is_seen = models.BooleanField('Seen', default=False)
+    seen_date = models.DateTimeField(null=True)
+    is_email_sent = models.BooleanField('Email Sent Status', default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['-updated_at', 'project', 'notification_type', ]
 
-    def notify_followers(self, *args, **kwargs):
-        if self.is_broadcast:
-            user_list = CustomUser.objects.filter(is_active=True).exclude(pk=self.triggered_by.pk)
-        else:
-            user_list = self.project.project_followers.filter(is_active=True).exclude(pk=self.triggered_by.pk)
+    def send_email_notification(self, *args, **kwargs):
+        subject = '[{}] - {}'.format(
+            self.notification_type,
+            self.notification.title
+        )
+        email_body = self.notification_text
+        recipient_list = [self.notify_to.email, ]
 
-        for user in user_list:
-            user_notification = UserNotification.objects.create(
-                notification=self,
-                user=user,
-            )
-            user_notification.save()
-            # user_notification.send_email()
+        if send_mail(
+            subject,
+            email_body,
+            settings.EMAIL_HOST_USER,
+            recipient_list
+        ):
+            self.is_email_sent = True
 
     def __str__(self):
         return self.notification_text
-
-
-class UserNotification(models.Model):
-    """
-    Notifications for based projects followed by users
-    """
-    notification = models.ForeignKey(
-        Notification,
-        on_delete=models.CASCADE,
-        related_name='user_notifications'
-    )
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    is_seen = models.BooleanField('Seen', default=False)
-    seen_date = models.DateTimeField(null=True)
-
-    def send_email(self, *args, **kwargs):
-        return send_mail(
-            self.notification.email_subject,
-            self.notification.email_text,
-            settings.EMAIL_HOST_USER,
-            [self.user.email, ],
-        )
-
-    def __str__(self):
-        return '{} for {}'.format(self.notification, self.user)
 
 
 class Project(models.Model):
