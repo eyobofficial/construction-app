@@ -119,8 +119,8 @@ class Notification(models.Model):
     Represents a Notification
     """
     NOTIFICATION_TYPE_CHOICES = (
-        ('info', 'Information'),
-        ('warning', 'Warnining'),
+        ('alert', 'Alert'),
+        ('warning', 'Warning'),
     )
     notification_type = models.CharField(
         max_length=100,
@@ -146,7 +146,7 @@ class Notification(models.Model):
     notification_text = models.CharField(max_length=255)
     notification_url = models.URLField()
     is_seen = models.BooleanField('Seen', default=False)
-    seen_date = models.DateTimeField(null=True)
+    seen_date = models.DateTimeField(null=True, blank=True)
     is_email_sent = models.BooleanField('Email Sent Status', default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -154,24 +154,55 @@ class Notification(models.Model):
     class Meta:
         ordering = ['-updated_at', 'project', 'notification_type', ]
 
+    def __str__(self):
+        return self.notification_text
+
     def send_email_notification(self, *args, **kwargs):
+        # Email Subject
         subject = '[{}] - {}'.format(
-            self.notification_type,
-            self.notification.title
+            self.get_notification_type_display(),
+            self.notification_title
         )
-        email_body = self.notification_text
+
+        # Text Email Body
+        email_body = '''
+        {} CONSTRUCTION PROJECT
+
+        {}
+        {}
+        '''.format(
+            self.project.short_name.upper(),
+            self.notification_text,
+            self.notification_url,
+        )
+
+        # Email Recipents
         recipient_list = [self.notify_to.email, ]
 
         if send_mail(
-            subject,
-            email_body,
+            subject, email_body,
             settings.EMAIL_HOST_USER,
-            recipient_list
-        ):
+            recipient_list,
+            # fail_silently=True,
+        ) == 1:
             self.is_email_sent = True
+            self.save()
 
-    def __str__(self):
-        return self.notification_text
+    @staticmethod
+    def send_unsent_emails(**kwargs):
+        triggered_by = kwargs.get('triggered_by')
+        notify_to = kwargs.get('notify_to')
+
+        query = Notification.objects.filter(is_email_sent=False)
+
+        if triggered_by:
+            query = query.filter(triggered_by=triggered_by)
+
+        if notify_to:
+            query = query.filter(notify_to=notify_to)
+
+        for notification in query:
+            notification.send_email_notification()
 
 
 class Project(models.Model):

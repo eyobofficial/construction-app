@@ -38,8 +38,22 @@ class ProjectAdmin(admin.ModelAdmin):
 
 @admin.register(models.Notification)
 class NotificationAdmin(admin.ModelAdmin):
-    list_display = ('notification_type', 'notification_text', 'project', )
-    list_filter = ('notification_type', 'project', 'triggered_by', )
-    search_fields = ('notification_text', )
+    list_display = (
+        'notification_type',
+        'notification_title',
+        'project',
+        'triggered_by',
+        'notify_to',
+        'is_seen',
+        'is_email_sent'
+    )
+    list_filter = (
+        'notification_type',
+        'project',
+        'triggered_by',
+        'is_seen',
+        'is_email_sent'
+    )
+    search_fields = ('notification_title', 'notification_text', )
 
 
