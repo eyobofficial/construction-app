@@ -8,6 +8,8 @@ from . import utils
 
 from . import managers
 
+import datetime
+
 
 class CustomUser(AbstractUser):
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
@@ -300,7 +302,7 @@ class Project(models.Model):
         Returns the project completion date
         """
         if self.commencement_date and self.period:
-            return self.commencement_date + self.period
+            return self.commencement_date + datetime.timedelta(days=self.period)
         return
 
     def get_status_label(self):
