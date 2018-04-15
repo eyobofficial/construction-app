@@ -1,11 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.urls import reverse
-from django.core.mail import send_mail
+from django.core import mail
+from django.core.mail import EmailMessage
 from django.conf import settings
-
 from . import utils
-
 from . import managers
 
 import datetime
@@ -137,17 +136,12 @@ class Notification(models.Model):
         on_delete=models.SET_NULL,
         related_name='triggered_notifications'
     )
-    notify_to = models.ForeignKey(
-        CustomUser,
-        on_delete=models.CASCADE,
-        related_name='received_notifications'
+    title = models.CharField(max_length=120)
+    body = models.CharField(max_length=255)
+    is_broadcast = models.BooleanField(
+        default=False,
+        help_text='Send notification to all users'
     )
-    notification_title = models.CharField(max_length=120)
-    notification_text = models.CharField(max_length=255)
-    notification_url = models.URLField()
-    is_seen = models.BooleanField('Seen', default=False)
-    seen_date = models.DateTimeField(null=True, blank=True)
-    is_email_sent = models.BooleanField('Email Sent Status', default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -155,16 +149,29 @@ class Notification(models.Model):
         ordering = ['-updated_at', 'project', 'notification_type', ]
 
     def __str__(self):
-        return self.notification_text
+        return self.title
 
-    def send_email_notification(self, *args, **kwargs):
-        # Email Subject
+    def get_redirect_url(self, *args, **kwargs):
+        """
+        Returns a URL for the notification link to redirect to
+        """
+        # Temporary solution
+        return self.project.get_absolute_url()
+
+    def get_email_subject(self, *args, **kwargs):
+        """
+        Return a 'Subject' for email of this notification
+        """
         subject = '[{}] - {}'.format(
             self.get_notification_type_display(),
-            self.notification_title
+            self.title
         )
+        return subject
 
-        # Text Email Body
+    def get_email_body(self, *args, **kwargs):
+        """
+        Returns the 'Body' of the email for this notification
+        """
         email_body = '''
         {} CONSTRUCTION PROJECT
 
@@ -172,21 +179,26 @@ class Notification(models.Model):
         {}
         '''.format(
             self.project.short_name.upper(),
-            self.notification_text,
-            self.notification_url,
+            self.body,
+            self.get_redirect_url(),
         )
+        return email_body
 
-        # Email Recipents
-        recipient_list = [self.notify_to.email, ]
+    def send_emails(self, *args, **kwargs):
+        user_notifications = self.user_notifications.filter(
+            is_email_sent=False
+        )
+        connection = mail.get_connection()
+        connection.open()
 
-        if send_mail(
-            subject, email_body,
-            settings.EMAIL_HOST_USER,
-            recipient_list,
-            # fail_silently=True,
-        ) == 1:
-            self.is_email_sent = True
-            self.save()
+        for notification in user_notifications:
+            email_messaage = notification.get_email_message(
+                connection=connection
+            )
+            if email_messaage.send():
+                notification.is_email_sent = True
+                notification.save()
+        connection.close()
 
     @staticmethod
     def send_unsent_emails(**kwargs):
@@ -203,6 +215,57 @@ class Notification(models.Model):
 
         for notification in query:
             notification.send_email_notification()
+
+
+class UserNotification(models.Model):
+    """
+    Represents a User Notification
+    """
+    notification = models.ForeignKey(
+        Notification,
+        related_name='user_notifications',
+        on_delete=models.CASCADE
+    )
+    notify_to = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name='received_notifications'
+    )
+    is_seen = models.BooleanField('Seen', default=False)
+    seen_date = models.DateTimeField(null=True, blank=True)
+    is_email_sent = models.BooleanField('Email Sent Status', default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['is_seen', 'notification', ]
+        get_latest_by = ['seen_date', ]
+
+    def __str__(self, *args, **kwargs):
+        return '{} -> {}'.format(self.notification, self.notify_to)
+
+    def get_email_message(self, *args, **kwargs):
+        """
+        Returns a EmailMessage object
+        """
+        connection = kwargs.get('connection')
+        subject = self.notification.get_email_subject()
+        body = self.notification.get_email_body()
+        sender = settings.EMAIL_HOST_USER
+        recipient_list = [self.notify_to.email, ]
+        return EmailMessage(
+            subject,
+            body,
+            sender,
+            recipient_list,
+            connection=connection
+        )
+
+    def send_email(self, *args, **kwargs):
+        email_message = self.get_email_message()
+        if email_message.send():
+            self.is_email_sent = True
+            self.save()
 
 
 class Project(models.Model):

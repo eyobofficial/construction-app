@@ -5,4 +5,4 @@ class DashboardConfig(AppConfig):
     name = 'dashboard'
 
     def ready(self):
-        from .signals import save_user_notification
+        from .signals import create_user_notifications
