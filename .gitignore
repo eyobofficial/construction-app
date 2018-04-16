@@ -13,3 +13,6 @@ __pycache__
 
 # Media Assets
 # media/*
+
+# Tempory files
+temp/*
