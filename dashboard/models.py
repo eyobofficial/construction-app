@@ -1,8 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.urls import reverse
-from django.core import mail
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, get_connection
 from django.conf import settings
 from . import utils
 from . import managers
@@ -188,7 +187,7 @@ class Notification(models.Model):
         user_notifications = self.user_notifications.filter(
             is_email_sent=False
         )
-        connection = mail.get_connection()
+        connection = get_connection()
         connection.open()
 
         for notification in user_notifications:
