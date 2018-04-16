@@ -88,6 +88,25 @@ def create_user(username, *args, **kwargs):
     user.save()
 
 
+def create_notification(project, triggered_by, **kwargs):
+    """
+    Returns a test Notification object
+    """
+    notification_type = kwargs.get('notification_type', 'alert')
+    title = kwargs.get('title', 'Test notification title')
+    body = kwargs.get('body', 'Test notification body text')
+    is_broadcast = kwargs.get('is_broadcast', False)
+
+    notification = models.Notification.objects.create(
+        notification_type=notification_type,
+        project=project,
+        triggered_by=triggered_by,
+        title=title, body=body,
+        is_broadcast=is_broadcast,
+    )
+    return notification
+
+
 class ProjectModelTests(TestCase):
 
     @classmethod
@@ -143,11 +162,20 @@ class NotificationModelTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        # Create A Test Consultant
+        # Create A Test Data
         create_consultant()
-        create_project()
+        test_project = create_project()
         create_user('trigger')
-        create_user('receiver')
-    
-    def test_send_email_notification_method(self, *args, **kwargs):
-        pass
+        receiver1 = create_user('receiver1', email='receiver1@email.com')
+        receiver2 = create_user('receiver2', email='receiver1@email.com')
+        test_project.project_followers.add(receiver1, receiver2)
+        test_project.save()
+
+    def test_creating_notification(self, *args, **kwargs):
+        project = models.Project.objects.get(pk=1)
+        triggered_by = models.CustomUser.objects.get(username='trigger')
+
+        notification = create_notification(project, triggered_by)
+        self.assertIs(notification.triggered_by, triggered_by)
+        self.assertEqual(len(notification.user_notifications.all()), 2)
+
