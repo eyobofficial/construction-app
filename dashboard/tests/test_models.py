@@ -86,6 +86,7 @@ def create_user(username, *args, **kwargs):
     user.project_administered = kwargs.get('project_administered')
     user.is_project_admin = kwargs.get('is_project_admin', False)
     user.save()
+    return user
 
 
 def create_notification(project, triggered_by, **kwargs):
@@ -167,7 +168,7 @@ class NotificationModelTests(TestCase):
         test_project = create_project()
         create_user('trigger')
         receiver1 = create_user('receiver1', email='receiver1@email.com')
-        receiver2 = create_user('receiver2', email='receiver1@email.com')
+        receiver2 = create_user('receiver2', email='receiver2@email.com')
         test_project.project_followers.add(receiver1, receiver2)
         test_project.save()
 
@@ -178,4 +179,3 @@ class NotificationModelTests(TestCase):
         notification = create_notification(project, triggered_by)
         self.assertIs(notification.triggered_by, triggered_by)
         self.assertEqual(len(notification.user_notifications.all()), 2)
-

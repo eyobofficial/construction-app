@@ -267,6 +267,25 @@ class UserNotification(models.Model):
             self.save()
 
 
+class Activity(models.Model):
+    """
+    Represents construction Activity
+    Example: Earth works, Concrete Work, Finishing Work
+    """
+    title = models.CharField('Construction Activity', max_length=60)
+    description = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['title', 'updated_at', ]
+        verbose_name = 'Construction Activity'
+        verbose_name_plural = 'Construction Activities'
+
+    def __str__(self):
+        return self.title
+
+
 class Project(models.Model):
     """
     Represents a Construction Project
@@ -405,3 +424,143 @@ class Project(models.Model):
     def get_absolute_url(self):
         return reverse('dashboard:project-detail', args=[str(self.pk)])
 
+
+class Schedule(models.Model):
+    """
+    Represents a construction working schedule
+    """
+    PERIOD_CHOICE_OPTIONS = (
+        ('daily', 'Daily'),
+        ('weekly', 'Weekly'),
+        ('monthly', 'Monthly')
+    )
+    project = models.ForeignKey(
+        Project,
+        related_name='schedules',
+        on_delete=models.CASCADE
+    )
+    title = models.CharField('Schedule Title', max_length=120)
+    description = models.TextField(null=True, blank=True)
+    period = models.CharField(
+        'Scheduled Period',
+        max_length=30,
+        choices=PERIOD_CHOICE_OPTIONS,
+    )
+    is_active = models.BooleanField('Active Status', default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['is_active', 'project', '-updated_at', ]
+        get_latest_by = ['updated_at', ]
+        permissions = (
+            ('admin_schedule', 'Administer Schedule'),
+        )
+
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self, *args, **kwargs):
+        return reverse('dashboard:schedule-detail', args=[str(self.pk)])
+
+
+class Plan(models.Model):
+    """
+    Represents a planned amount for a period (i.e. period as defined
+    in the Scheduled model)
+    """
+    schedule = models.ForeignKey(
+        Schedule,
+        related_name='plans',
+        on_delete=models.CASCADE
+    )
+    period_start_date = models.DateField()
+    amount = models.DecimalField(
+        'Planned Amount',
+        max_digits=12,
+        decimal_places=2,
+        default=0.0
+    )
+    activities = models.ManyToManyField(
+        Activity,
+        verbose_name='Planned Activities',
+        related_name='activity_plans',
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['schedule', 'period_start_date', ]
+        get_latest_by = ['-period_start_date', '-updated_at', ]
+        permissions = (
+            ('admin_plan', 'Administer Plans'),
+        )
+        verbose_name = 'Schedule Plan'
+        verbose_name_plural = 'Schedule Plans'
+
+    def __str__(self):
+        return '{} Plan for {}'.format(self.period_start_date, self.schedule)
+
+    def get_period_end_date(self, *args, **kwargs):
+        pass
+
+    def get_period_number(self, *args, **kwargs):
+        pass
+
+    def get_absolute_url(self, *args, **kwargs):
+        return reverse('dashboard:plan-detail', args=[str(self.pk)])
+
+
+class Report(models.Model):
+    """
+    Represents planned vs executed amount report for a period
+    """
+    plan = models.ForeignKey(
+        Plan,
+        related_name='reports',
+        on_delete=models.CASCADE
+    )
+    amount = models.DecimalField(
+        'Executed Amount',
+        max_digits=12,
+        decimal_places=2,
+        default=0.0
+    )
+    activities = models.ManyToManyField(
+        Activity,
+        verbose_name='Executed Activities',
+        related_name='activity_reports',
+    )
+    description = models.TextField(
+        'Description of executed works',
+        null=True, blank=True,
+    )
+    slippage_reason = models.TextField(
+        'Reasons and descrioption of slippage',
+        null=True, blank=True,
+    )
+    remark = models.TextField(
+        'Additional Notes and Remarks',
+        null=True, blank=True,
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['plan', '-updated_at', ]
+        get_latest_by = ['-updated_at', ]
+        permissions = (
+            ('admin_report', 'Administer Report'),
+        )
+
+    def __str__(self):
+        return 'Report for {}'.format(self.plan)
+
+    def get_slippage_amount(self, *args, **kwargs):
+        pass
+
+    def get_slippage_percent(self, *args, **kwargs):
+        pass
+
+    def get_absolute_url(self, *args, **kwargs):
+        return reverse('dashboard:report-detail', args=[str(self.pk)])
