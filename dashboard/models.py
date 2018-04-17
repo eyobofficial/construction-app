@@ -559,7 +559,7 @@ class Report(models.Model):
     def get_slippage_amount(self, *args, **kwargs):
         pass
 
-    def get_slippage_percent(self, *args, **kwargs):
+    def get_slippage_percentage(self, *args, **kwargs):
         pass
 
     def get_absolute_url(self, *args, **kwargs):
