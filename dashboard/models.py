@@ -564,3 +564,104 @@ class Report(models.Model):
 
     def get_absolute_url(self, *args, **kwargs):
         return reverse('dashboard:report-detail', args=[str(self.pk)])
+
+
+class Payment(models.Model):
+    """
+    Represents a Payment Certificate (But not Subcontractor Payment)
+    """
+    PAYMENT_TYPE_CHOICES = (
+        ('advance', 'Advance Payment'),
+        ('interim', 'Interim Payment'),
+        ('final', 'Final Payment'),
+    )
+    STATUS_CHOICES = (
+        (1, 'Submitted'),
+        (2, 'Under Correction'),
+        (3, 'Approved'),
+        (4, 'Rejected'),
+    )
+    project = models.ForeignKey(
+        Project,
+        related_name='payments',
+        on_delete=models.CASCADE,
+    )
+    previous_payment = models.ForeignKey(
+        'Payment',
+        null=True, blank=True,
+        related_name='next_payment',
+        on_delete=models.SET_NULL,
+    )
+    payment_type = models.CharField(
+        max_length=60,
+        choices=PAYMENT_TYPE_CHOICES,
+        default='interim',
+    )
+    status = models.IntegerField('Payment status')
+    title = models.CharField('Payment title', max_length=100)
+    service_sum = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0.0,
+    )
+    material_onsite = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0.0,
+    )
+    advance_repayment = models.DecimalField(
+        'Advance repayment(%)',
+        max_digits=5,
+        decimal_places=2,
+        default=30.0,
+    )
+    retention_repayment = models.DecimalField(
+        'Retention repayment(%)',
+        max_digits=5,
+        decimal_places=2,
+        default=5.0,
+    )
+    penality_repayment = models.DecimalField(
+        'Penality repayment(%)',
+        max_digits=5,
+        decimal_places=2,
+        default=0.0,
+    )
+    prepared_by = models.CharField(max_length=100, null=True, blank=True)
+    submitted_date = models.DateField(null=True, blank=True)
+    submitted_ref_no = models.CharField(
+        'Submittal Letter Ref. No.',
+        max_length=30,
+        null=True, blank=True,
+    )
+    submitted_date = models.DateField(
+        'Approval/Rejection date',
+        null=True, blank=True
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['project', 'previous_payment', ]
+        get_latest_by = ['-updated_at', ]
+        permissions = (
+            ('admin_payment', 'Administer Payment'),
+        )
+
+    def __str__(self):
+        return self.title
+
+    def get_advance_repayment_amount(self, *args, **kwargs):
+        pass
+
+    def get_retention_repayment_amount(self, *args, **kwargs):
+        pass
+
+    def get_penality_amount(self, *args, **kwargs):
+        pass
+
+    def get_net_payment(self, *args, **kwargs):
+        pass
+
+    def get_absolute_url(self, *args, **kwargs):
+        return reverse('dashboard:payment-detail', args=[str(self.pk)])
