@@ -378,6 +378,10 @@ class Project(models.Model):
     def __str__(self):
         return self.short_name
 
+    def create_notification(self, *args, **kwargs):
+        pass
+
+
     def get_original_completion_date(self, *args, **kwargs):
         """
         Returns the project completion date
