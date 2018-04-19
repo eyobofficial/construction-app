@@ -136,7 +136,7 @@ class Notification(models.Model):
         related_name='triggered_notifications'
     )
     title = models.CharField(max_length=120)
-    body = models.CharField(max_length=255)
+    body = models.TextField()
     is_broadcast = models.BooleanField(
         default=False,
         help_text='Send notification to all users'
@@ -359,8 +359,14 @@ class Project(models.Model):
     period = models.PositiveIntegerField(
         'Contract Period',
         null=True, blank=True,
-        help_text='Project life time in calendar days')
-
+        help_text='Project life time in calendar days'
+    )
+    created_by = models.ForeignKey(
+        CustomUser,
+        related_name='projects',
+        null=True,
+        on_delete=models.SET_NULL,
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
