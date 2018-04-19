@@ -378,9 +378,19 @@ class Project(models.Model):
     def __str__(self):
         return self.short_name
 
-    def create_notification(self, *args, **kwargs):
-        pass
-
+    def add_notification(self, title, body, *args, **kwargs):
+        kind = kwargs.get('kind', 'alert')
+        triggered_by = kwargs.get('triggered_by')
+        is_broadcast = kwargs.get('broadcast', False)
+        notification = Notification.objects.create(
+            notification_type=kind,
+            project=self,
+            triggered_by=triggered_by,
+            title=title,
+            body=body,
+            is_broadcast=is_broadcast,
+        )
+        return notification
 
     def get_original_completion_date(self, *args, **kwargs):
         """
