@@ -29,16 +29,6 @@ class ConsultantAdmin(admin.ModelAdmin):
     search_fields = ('full_name', 'short_name')
 
 
-admin.site.register(models.Activity)
-
-
-@admin.register(models.Project)
-class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('short_name', 'consultant', 'construction_type', 'status',)
-    list_filter = ('construction_type', 'consultant', 'status')
-    search_fields = ('full_name', 'short_name', 'project_code', 'description',)
-
-
 @admin.register(models.Notification)
 class NotificationAdmin(admin.ModelAdmin):
     list_display = (
@@ -62,17 +52,37 @@ class UserNotificationAdmin(admin.ModelAdmin):
     search_fields = ('notification', )
 
 
+admin.site.register(models.Activity)
+
+
+@admin.register(models.Project)
+class ProjectAdmin(admin.ModelAdmin):
+    list_display = ('short_name', 'consultant', 'construction_type', 'status',)
+    list_filter = ('construction_type', 'consultant', 'status')
+    exclude = ('created_by', )
+    search_fields = ('full_name', 'short_name', 'project_code', 'description',)
+
+    def save_model(self, request, obj, form, change):
+        obj.created_by = request.user
+        super().save_model(request, obj, form, change)
+
+
+class PlanInline(admin.StackedInline):
+    model = models.Plan
+    list_display = (
+        'schedule_project',
+        'schedule',
+        'period_start_date',
+        'amount',
+    )
+
+
 @admin.register(models.Schedule)
 class ScheduleAdmin(admin.ModelAdmin):
     list_display = ('project', 'title', 'period', 'is_active', 'updated_at', )
     list_filter = ('is_active', 'project', )
     search_fields = ('title', )
-
-
-@admin.register(models.Plan)
-class PlanAdmin(admin.ModelAdmin):
-    list_display = ('schedule', 'period_start_date', 'amount', )
-    list_filter = ('schedule', )
+    inlines = (PlanInline, )
 
 
 @admin.register(models.Progress)
