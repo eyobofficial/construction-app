@@ -4,29 +4,6 @@ from django.dispatch import receiver
 from . import models
 
 
-@receiver(signals.post_save, sender=models.Project)
-def add_project_notifications(sender, instance, created, **kwargs):
-    """
-    Everytime Project model is saved, create a Notification record in
-    the Notification model.
-    """
-    if created:
-        notification_title = '[New Project] {} Construction Project'.format(
-            instance.short_name
-        )
-        notification_body = """
-        {} construction project is created by {} on {}.
-        """.format(
-            instance.full_name,
-            instance.created_by.get_screen_name(),
-            instance.created_at,
-        )
-        instance.add_notification(
-            notification_title, notification_body,
-            broadcast=True,
-        )
-
-
 @receiver(signals.post_save, sender=models.Notification)
 def create_user_notifications(sender, created, instance, **kwargs):
     """

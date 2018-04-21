@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.urls import reverse
 from django.core.mail import EmailMessage, get_connection
 from django.conf import settings
+from model_utils import FieldTracker
 from . import utils
 from . import managers
 
@@ -376,6 +377,8 @@ class Project(Base):
     objects = models.Manager()
     my_projects = managers.ProjectManager()
 
+    tracker = FieldTracker()
+
     class Meta:
         ordering = ['status', '-updated_at', 'short_name', ]
         get_latest_by = 'updated_at'
@@ -385,6 +388,40 @@ class Project(Base):
 
     def __str__(self):
         return self.short_name
+
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        if is_new:
+            notification_title = '[New Project] {}'.format(
+                self.short_name
+            )
+            notification_body = """
+            {} construction project is created by {} on {}.
+            """.format(
+                self.full_name,
+                self.created_by.get_screen_name(),
+                self.created_at,
+            )
+            self.add_notification(
+                notification_title,
+                notification_body,
+                broadcast=True,
+            )
+        elif self.tracker.has_changed('status'):
+            notification_title = '[Project Update] {} status updated'.format(
+                self.short_name
+            )
+            notification_body = """
+            {} construction project status is updated to {}.
+            """.format(
+                self.full_name,
+                self.get_status_display(),
+            )
+            self.add_notification(
+                notification_title,
+                notification_body,
+            )
+        super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('dashboard:project-detail', args=[str(self.pk)])
