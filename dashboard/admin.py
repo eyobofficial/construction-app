@@ -71,4 +71,10 @@ class ScheduleAdmin(admin.ModelAdmin):
 
 @admin.register(models.Plan)
 class PlanAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('schedule', 'period_start_date', 'amount', )
+    list_filter = ('schedule', )
+
+
+@admin.register(models.Progress)
+class ProgressAdmin(admin.ModelAdmin):
+    list_display = ('plan', 'amount', )

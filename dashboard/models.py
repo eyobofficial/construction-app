@@ -9,6 +9,20 @@ from . import managers
 import datetime
 
 
+class Base(models.Model):
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        help_text='Record created date and time'
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        help_text='Record last updated date and time'
+    )
+
+    class Meta:
+        abstract = True
+
+
 class CustomUser(AbstractUser):
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
     full_name = models.CharField(max_length=120)
@@ -58,7 +72,7 @@ class CustomUser(AbstractUser):
             return self.username
 
 
-class Config(models.Model):
+class Config(Base):
     """
     Constant configurations and meta data
     """
@@ -74,8 +88,6 @@ class Config(models.Model):
     name = models.CharField(max_length=60)
     slug = models.SlugField(max_length=60)
     value = models.CharField(max_length=255, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['config_type', ]
@@ -86,7 +98,7 @@ class Config(models.Model):
         return self.name
 
 
-class Consultant(models.Model):
+class Consultant(Base):
     """
     Represents a Consultant Firm
     """
@@ -102,8 +114,6 @@ class Consultant(models.Model):
         null=True, blank=True,
         help_text='Short description of the Consultant firm. (Optional)',
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.short_name
@@ -112,7 +122,7 @@ class Consultant(models.Model):
         return reverse('dashboard:consultant-detail', args=[str(self.pk)])
 
 
-class Notification(models.Model):
+class Notification(Base):
     """
     Represents a Notification
     """
@@ -141,8 +151,6 @@ class Notification(models.Model):
         default=False,
         help_text='Send notification to all users'
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['-updated_at', 'project', 'notification_type', ]
@@ -216,7 +224,7 @@ class Notification(models.Model):
             notification.send_email_notification()
 
 
-class UserNotification(models.Model):
+class UserNotification(Base):
     """
     Represents a User Notification
     """
@@ -233,8 +241,6 @@ class UserNotification(models.Model):
     is_seen = models.BooleanField('Seen', default=False)
     seen_date = models.DateTimeField(null=True, blank=True)
     is_email_sent = models.BooleanField('Email Sent Status', default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['is_seen', 'notification', ]
@@ -267,15 +273,13 @@ class UserNotification(models.Model):
             self.save()
 
 
-class Activity(models.Model):
+class Activity(Base):
     """
     Represents construction Activity
     Example: Earth works, Concrete Work, Finishing Work
     """
     title = models.CharField('Construction Activity', max_length=60)
     description = models.TextField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['title', 'updated_at', ]
@@ -286,7 +290,7 @@ class Activity(models.Model):
         return self.title
 
 
-class Project(models.Model):
+class Project(Base):
     """
     Represents a Construction Project
     """
@@ -367,8 +371,6 @@ class Project(models.Model):
         null=True,
         on_delete=models.SET_NULL,
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     # Custom Managers
     objects = models.Manager()
@@ -383,6 +385,9 @@ class Project(models.Model):
 
     def __str__(self):
         return self.short_name
+
+    def get_absolute_url(self):
+        return reverse('dashboard:project-detail', args=[str(self.pk)])
 
     def add_notification(self, title, body, *args, **kwargs):
         kind = kwargs.get('kind', 'alert')
@@ -441,11 +446,8 @@ class Project(models.Model):
                 status=self.get_status_display()
             )
 
-    def get_absolute_url(self):
-        return reverse('dashboard:project-detail', args=[str(self.pk)])
 
-
-class Schedule(models.Model):
+class Schedule(Base):
     """
     Represents a construction working schedule
     """
@@ -467,8 +469,6 @@ class Schedule(models.Model):
         choices=PERIOD_CHOICE_OPTIONS,
     )
     is_active = models.BooleanField('Active Status', default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['is_active', 'project', '-updated_at', ]
@@ -484,7 +484,7 @@ class Schedule(models.Model):
         return reverse('dashboard:schedule-detail', args=[str(self.pk)])
 
 
-class Plan(models.Model):
+class Plan(Base):
     """
     Represents a planned amount for a period (i.e. period as defined
     in the Scheduled model)
@@ -503,11 +503,10 @@ class Plan(models.Model):
     )
     activities = models.ManyToManyField(
         Activity,
+        blank=True,
         verbose_name='Planned Activities',
         related_name='activity_plans',
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['schedule', 'period_start_date', ]
@@ -521,23 +520,23 @@ class Plan(models.Model):
     def __str__(self):
         return '{} Plan for {}'.format(self.period_start_date, self.schedule)
 
+    def get_absolute_url(self, *args, **kwargs):
+        return reverse('dashboard:plan-detail', args=[str(self.pk)])
+
     def get_period_end_date(self, *args, **kwargs):
         pass
 
     def get_period_number(self, *args, **kwargs):
         pass
 
-    def get_absolute_url(self, *args, **kwargs):
-        return reverse('dashboard:plan-detail', args=[str(self.pk)])
 
-
-class Report(models.Model):
+class Progress(Base):
     """
-    Represents planned vs executed amount report for a period
+    Represents planned vs executed amount progress for a period
     """
     plan = models.ForeignKey(
         Plan,
-        related_name='reports',
+        related_name='progress_list',
         on_delete=models.CASCADE
     )
     amount = models.DecimalField(
@@ -548,6 +547,7 @@ class Report(models.Model):
     )
     activities = models.ManyToManyField(
         Activity,
+        blank=True,
         verbose_name='Executed Activities',
         related_name='activity_reports',
     )
@@ -563,18 +563,19 @@ class Report(models.Model):
         'Additional Notes and Remarks',
         null=True, blank=True,
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['plan', '-updated_at', ]
         get_latest_by = ['-updated_at', ]
         permissions = (
-            ('admin_report', 'Administer Report'),
+            ('admin_progress', 'Administer Progress'),
         )
 
     def __str__(self):
         return 'Report for {}'.format(self.plan)
+
+    def get_absolute_url(self, *args, **kwargs):
+        return reverse('dashboard:report-detail', args=[str(self.pk)])
 
     def get_slippage_amount(self, *args, **kwargs):
         pass
@@ -582,11 +583,8 @@ class Report(models.Model):
     def get_slippage_percentage(self, *args, **kwargs):
         pass
 
-    def get_absolute_url(self, *args, **kwargs):
-        return reverse('dashboard:report-detail', args=[str(self.pk)])
 
-
-class Payment(models.Model):
+class Payment(Base):
     """
     Represents a Payment Certificate (But not Subcontractor Payment)
     """
@@ -658,8 +656,6 @@ class Payment(models.Model):
         'Approval/Rejection date',
         null=True, blank=True
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['project', 'previous_payment', ]
@@ -670,6 +666,9 @@ class Payment(models.Model):
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self, *args, **kwargs):
+        return reverse('dashboard:payment-detail', args=[str(self.pk)])
 
     def get_advance_repayment_amount(self, *args, **kwargs):
         pass
@@ -682,6 +681,3 @@ class Payment(models.Model):
 
     def get_net_payment(self, *args, **kwargs):
         pass
-
-    def get_absolute_url(self, *args, **kwargs):
-        return reverse('dashboard:payment-detail', args=[str(self.pk)])
