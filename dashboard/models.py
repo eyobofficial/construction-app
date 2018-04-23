@@ -72,6 +72,15 @@ class CustomUser(AbstractUser):
         else:
             return self.username
 
+    def get_notifications(self, *args, **kwargs):
+        """
+        Returns all notification received by this user instance
+        """
+        return self.received_notifications.order_by('-created_at')
+
+    def unseen_notifications(self, *args, **kwargs):
+        return self.received_notifications.filter(is_seen=False)
+
 
 class Config(Base):
     """

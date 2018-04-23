@@ -13,7 +13,9 @@ from dashboard import utils
 @login_required
 def index(request):
     template_name = 'dashboard/index.html'
-    return render(request, template_name, {})
+    return render(request, template_name, {
+        'page_name': 'index',
+    })
 
 
 class ProjectList(LoginRequiredMixin, generic.ListView):
