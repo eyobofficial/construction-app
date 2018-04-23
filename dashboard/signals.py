@@ -26,4 +26,3 @@ def create_user_notifications(sender, created, instance, **kwargs):
         for user in project_followers:
             notification = instance.user_notifications.create(notify_to=user)
             notification.save()
-

@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 from django.core.mail import EmailMessage, get_connection
 from django.conf import settings
@@ -38,26 +41,6 @@ class CustomUser(AbstractUser):
         'Project',
         related_name='projects_admins',
         blank=True
-    )
-    is_project_admin = models.BooleanField(
-        'Administer Project Detals',
-        default=False,
-    )
-    is_insurance_admin = models.BooleanField(
-        'Administer Insurance Details',
-        default=False,
-    )
-    is_variation_admin = models.BooleanField(
-        'Administer Variation Details',
-        default=False,
-    )
-    is_claim_admin = models.BooleanField(
-        'Administer Time Claim Details',
-        default=False,
-    )
-    is_payment_admin = models.BooleanField(
-        'Administer Payment Details',
-        default=False,
     )
 
     def get_full_name(self):
@@ -136,18 +119,9 @@ class Notification(Base):
     """
     Represents a Notification
     """
-    NOTIFICATION_TYPE_CHOICES = (
-        ('alert', 'Alert'),
-        ('warning', 'Warning'),
-    )
-    notification_type = models.CharField(
-        max_length=100,
-        choices=NOTIFICATION_TYPE_CHOICES,
-    )
     project = models.ForeignKey(
         'Project',
-        null=True,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
     triggered_by = models.ForeignKey(
         CustomUser,
@@ -155,51 +129,34 @@ class Notification(Base):
         on_delete=models.SET_NULL,
         related_name='triggered_notifications'
     )
-    title = models.CharField(max_length=120)
-    body = models.TextField()
+    subject = models.CharField(max_length=120)
+    message = models.TextField('Notification message')
     is_broadcast = models.BooleanField(
         default=False,
         help_text='Send notification to all users'
     )
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
 
     class Meta:
-        ordering = ['-updated_at', 'project', 'notification_type', ]
+        ordering = ['-updated_at', ]
+        get_latest_by = ['-updated_at', ]
 
     def __str__(self):
-        return self.title
-
-    def get_redirect_url(self, *args, **kwargs):
-        """
-        Returns a URL for the notification link to redirect to
-        """
-        # Temporary solution
-        return self.project.get_absolute_url()
+        return self.subject
 
     def get_email_subject(self, *args, **kwargs):
         """
         Return a 'Subject' for email of this notification
         """
-        subject = '[{}] - {}'.format(
-            self.get_notification_type_display(),
-            self.title
-        )
-        return subject
+        return self.subject
 
     def get_email_body(self, *args, **kwargs):
         """
         Returns the 'Body' of the email for this notification
         """
-        email_body = '''
-        {} CONSTRUCTION PROJECT
-
-        {}
-        {}
-        '''.format(
-            self.project.short_name.upper(),
-            self.body,
-            self.get_redirect_url(),
-        )
-        return email_body
+        return self.message
 
     def send_emails(self, *args, **kwargs):
         user_notifications = self.user_notifications.filter(
@@ -381,6 +338,7 @@ class Project(Base):
         null=True,
         on_delete=models.SET_NULL,
     )
+    notifications = GenericRelation(Notification)
 
     # Custom Managers
     objects = models.Manager()
@@ -400,54 +358,39 @@ class Project(Base):
 
     def save(self, *args, **kwargs):
         is_new = self.pk is None
-        if is_new:
-            notification_title = '[New Project] {}'.format(
-                self.short_name
-            )
-            notification_body = """
-            {} construction project is created by {} on {}.
-            """.format(
-                self.full_name,
-                self.created_by.get_screen_name(),
-                self.created_at,
-            )
-            self.add_notification(
-                notification_title,
-                notification_body,
-                broadcast=True,
-            )
-        elif self.tracker.has_changed('status'):
-            notification_title = '[Project Update] {} status updated'.format(
-                self.short_name
-            )
-            notification_body = """
-            {} construction project status is updated to {}.
-            """.format(
-                self.full_name,
-                self.get_status_display(),
-            )
-            self.add_notification(
-                notification_title,
-                notification_body,
-            )
+        is_status_changed = self.tracker.has_changed('status')
         super().save(*args, **kwargs)
+        if is_new:
+            subject = 'New Project Added - {}'.format(self.full_name)
+            message = 'A new project with the title {} has been added'.format(
+                self.full_name.title()
+            )
+            self.add_notification.create(
+                subject=subject,
+                message=message,
+                is_broadcast=True,
+            )
+        elif is_status_changed:
+            subject = '{} Project Status Updated'.format(self.short_name)
+            message = '{} project status has bee updated to {}'.format(
+                self.short_name,
+                self.get_status_display()
+            )
+            self.add_notification(subject=subject, message=message)
 
     def get_absolute_url(self):
         return reverse('dashboard:project-detail', args=[str(self.pk)])
 
-    def add_notification(self, title, body, *args, **kwargs):
-        kind = kwargs.get('kind', 'alert')
+    def add_notification(self, subject, message, *args, **kwargs):
+        is_broadcast = kwargs.get('is_broadcast', False)
         triggered_by = kwargs.get('triggered_by')
-        is_broadcast = kwargs.get('broadcast', False)
-        notification = Notification.objects.create(
-            notification_type=kind,
+        self.notifications.create(
             project=self,
-            triggered_by=triggered_by,
-            title=title,
-            body=body,
+            subject=subject,
+            message=message,
             is_broadcast=is_broadcast,
+            triggered_by=triggered_by,
         )
-        return notification
 
     def get_original_completion_date(self, *args, **kwargs):
         """

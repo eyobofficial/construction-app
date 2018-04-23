@@ -42,6 +42,15 @@ class ProjectDetail(LoginRequiredMixin, generic.DetailView):
     template_name = 'dashboard/projects/project_detail.html'
 
     def get_context_data(self, *args, **kwargs):
+        
+        # Change unseen notification to seen
+        unseen_notifications = self.request.user.received_notifications.filter(
+            is_seen=False
+        ).filter(notification__project=self.object)
+        for notification in unseen_notifications:
+            notification.is_seen = True
+            notification.save()
+
         context = super(ProjectDetail, self).get_context_data(*args, **kwargs)
         context['page_name'] = 'Projects'
         return context
