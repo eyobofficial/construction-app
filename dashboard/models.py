@@ -372,7 +372,7 @@ class Project(Base):
             )
         elif is_status_changed:
             subject = '{} Project Status Updated'.format(self.short_name)
-            message = '{} project status has bee updated to {}'.format(
+            message = '{} project status has been updated to {}'.format(
                 self.short_name,
                 self.get_status_display()
             )
