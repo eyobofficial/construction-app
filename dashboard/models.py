@@ -34,12 +34,12 @@ class CustomUser(AbstractUser):
     bio = models.TextField('Short Bio', null=True, blank=True)
     projects_followed = models.ManyToManyField(
         'Project',
-        related_name='project_followers',
+        related_name='followers',
         blank=True
     )
     projects_administered = models.ManyToManyField(
         'Project',
-        related_name='projects_admins',
+        related_name='admins',
         blank=True
     )
 
@@ -129,22 +129,31 @@ class Notification(Base):
         on_delete=models.SET_NULL,
         related_name='triggered_notifications'
     )
+    notify_to = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name='received_notifications'
+    )
     subject = models.CharField(max_length=120)
     message = models.TextField('Notification message')
-    is_broadcast = models.BooleanField(
-        default=False,
-        help_text='Send notification to all users'
-    )
+    is_seen = models.BooleanField('Seen', default=False)
+    seen_date = models.DateTimeField(null=True, blank=True)
+    is_email_sent = models.BooleanField('Email Sent Status', default=False)
+
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
 
     class Meta:
-        ordering = ['-updated_at', ]
+        ordering = ['-is_seen', '-updated_at', ]
         get_latest_by = ['-updated_at', ]
 
     def __str__(self):
-        return self.subject
+        return '{} - From {} To {}'.format(
+            self.subject,
+            self.triggered_by,
+            self.notify_to
+        )
 
     def get_email_subject(self, *args, **kwargs):
         """
@@ -158,71 +167,13 @@ class Notification(Base):
         """
         return self.message
 
-    def send_emails(self, *args, **kwargs):
-        user_notifications = self.user_notifications.filter(
-            is_email_sent=False
-        )
-        connection = get_connection()
-        connection.open()
-
-        for notification in user_notifications:
-            email_messaage = notification.get_email_message(
-                connection=connection
-            )
-            if email_messaage.send():
-                notification.is_email_sent = True
-                notification.save()
-        connection.close()
-
-    @staticmethod
-    def send_unsent_emails(**kwargs):
-        triggered_by = kwargs.get('triggered_by')
-        notify_to = kwargs.get('notify_to')
-
-        query = Notification.objects.filter(is_email_sent=False)
-
-        if triggered_by:
-            query = query.filter(triggered_by=triggered_by)
-
-        if notify_to:
-            query = query.filter(notify_to=notify_to)
-
-        for notification in query:
-            notification.send_email_notification()
-
-
-class UserNotification(Base):
-    """
-    Represents a User Notification
-    """
-    notification = models.ForeignKey(
-        Notification,
-        related_name='user_notifications',
-        on_delete=models.CASCADE
-    )
-    notify_to = models.ForeignKey(
-        CustomUser,
-        on_delete=models.CASCADE,
-        related_name='received_notifications'
-    )
-    is_seen = models.BooleanField('Seen', default=False)
-    seen_date = models.DateTimeField(null=True, blank=True)
-    is_email_sent = models.BooleanField('Email Sent Status', default=False)
-
-    class Meta:
-        ordering = ['is_seen', 'notification', ]
-        get_latest_by = ['seen_date', ]
-
-    def __str__(self, *args, **kwargs):
-        return '{} -> {}'.format(self.notification, self.notify_to)
-
     def get_email_message(self, *args, **kwargs):
         """
         Returns a EmailMessage object
         """
         connection = kwargs.get('connection')
         subject = self.notification.get_email_subject()
-        body = self.notification.get_email_body()
+        body = self.get_email_body()
         sender = settings.EMAIL_HOST_USER
         recipient_list = [self.notify_to.email, ]
         return EmailMessage(
@@ -238,6 +189,22 @@ class UserNotification(Base):
         if email_message.send():
             self.is_email_sent = True
             self.save()
+
+    @staticmethod
+    def send_unsent_emails(**kwargs):
+        triggered_by = kwargs.get('triggered_by')
+        notify_to = kwargs.get('notify_to')
+
+        query = Notification.objects.filter(is_email_sent=False)
+
+        if triggered_by:
+            query = query.filter(triggered_by=triggered_by)
+
+        if notify_to:
+            query = query.filter(notify_to=notify_to)
+
+        for notification in query:
+            notification.send_email()
 
 
 class Activity(Base):
@@ -360,36 +327,36 @@ class Project(Base):
         is_new = self.pk is None
         is_status_changed = self.tracker.has_changed('status')
         super().save(*args, **kwargs)
+
         if is_new:
             subject = 'New Project Added - {}'.format(self.full_name)
             message = 'A new project with the title {} has been added'.format(
                 self.full_name.title()
             )
-            self.add_notification.create(
-                subject=subject,
-                message=message,
-                is_broadcast=True,
-            )
+            notify_list = CustomUser.objects.filter(is_active=True)
         elif is_status_changed:
             subject = '{} Project Status Updated'.format(self.short_name)
             message = '{} project status has been updated to {}'.format(
                 self.short_name,
                 self.get_status_display()
             )
-            self.add_notification(subject=subject, message=message)
+            notify_list = self.followers.filter(is_active=True)
+        else:
+            return
+        for user in notify_list:
+            self.add_notification(subject, message, user)
 
     def get_absolute_url(self):
         return reverse('dashboard:project-detail', args=[str(self.pk)])
 
-    def add_notification(self, subject, message, *args, **kwargs):
-        is_broadcast = kwargs.get('is_broadcast', False)
+    def add_notification(self, subject, message, notify_to, *args, **kwargs):
         triggered_by = kwargs.get('triggered_by')
         self.notifications.create(
             project=self,
+            triggered_by=triggered_by,
+            notify_to=notify_to,
             subject=subject,
             message=message,
-            is_broadcast=is_broadcast,
-            triggered_by=triggered_by,
         )
 
     def get_original_completion_date(self, *args, **kwargs):

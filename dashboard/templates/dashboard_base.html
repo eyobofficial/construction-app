@@ -223,8 +223,8 @@
                   {% if user.unseen_notifications %}
         					<div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
                     {% for user_notification in user.unseen_notifications %}
-        						<a class="dropdown-item" href="{{ user_notification.notification.content_object.get_absolute_url }}">
-                      {{ user_notification.notification.message }}
+        						<a class="dropdown-item" href="{{ user_notification.content_object.get_absolute_url }}">
+                      {{ user_notification.message }}
                     </a>
                     {% endfor %}
         					</div>

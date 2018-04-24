@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views import generic
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -34,12 +34,21 @@ class ProjectList(LoginRequiredMixin, generic.ListView):
             pk = int(request.GET['project'])
             project = get_object_or_404(models.Project, pk=pk)
             if subscription == 'follow':
-                project.project_followers.add(request.user)
+                project.followers.add(request.user)
                 project.save()
+                project.add_notification(
+                    subject='You started following a new project',
+                    message='You started following {} project'.format(
+                        project.short_name
+                    ),
+                    notify_to=request.user
+                )
+                return redirect('dashboard:project-list')
 
             if subscription == 'unfollow':
-                project.project_followers.remove(request.user)
+                project.followers.remove(request.user)
                 project.save()
+                return redirect('dashboard:project-list')
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, *args, **kwargs):
@@ -56,11 +65,11 @@ class ProjectDetail(LoginRequiredMixin, generic.DetailView):
     template_name = 'dashboard/projects/project_detail.html'
 
     def get_context_data(self, *args, **kwargs):
-        
         # Change unseen notification to seen
-        unseen_notifications = self.request.user.received_notifications.filter(
-            is_seen=False
-        ).filter(notification__project=self.object)
+        unseen_notifications = self.object.notifications.filter(
+            notify_to=self.request.user
+        ).filter(is_seen=False)
+
         for notification in unseen_notifications:
             notification.is_seen = True
             notification.save()

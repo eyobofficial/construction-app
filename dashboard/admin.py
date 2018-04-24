@@ -32,22 +32,18 @@ class ConsultantAdmin(admin.ModelAdmin):
 @admin.register(models.Notification)
 class NotificationAdmin(admin.ModelAdmin):
     list_display = (
+        'project',
         'subject',
         'triggered_by',
+        'notify_to',
+        'is_seen',
+        'is_email_sent',
         'content_object',
-        'project',
         'created_at',
     )
     list_display_links = ('subject', )
+    list_filter = ('project', 'is_seen', 'is_email_sent', )
     search_fields = ('subject', 'message', )
-
-
-@admin.register(models.UserNotification)
-class UserNotificationAdmin(admin.ModelAdmin):
-    list_display = ('notify_to', 'notification', 'is_seen', 'is_email_sent', 'created_at', )
-    list_display_links = ('notification', )
-    list_filter = ('is_seen', 'is_email_sent')
-    search_fields = ('notification', )
 
 
 admin.site.register(models.Activity)
