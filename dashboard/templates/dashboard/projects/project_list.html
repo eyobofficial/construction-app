@@ -48,7 +48,19 @@
                                 <td>{{ project.get_construction_type_display }}</td>
                                 <td class="text-center">{{ project.updated_at|date:'d/m/Y' }}</td>
                                 <td class="text-right">
-                                    <a href="#" class="btn btn-sm btn-outline btn-primary">Follow</a>
+                                    {% if project in user.projects_followed.all %}
+                                    <form>
+                                        <input type="hidden" name="project" value="{{ project.id }}">
+                                        <input type="hidden" name="subscription" value="unfollow">
+                                        <button type="submit" class="btn btn-sm btn-primary">Unfollow</button>
+                                    </form>
+                                    {% else %}
+                                    <form>
+                                        <input type="hidden" name="project" value="{{ project.id }}">
+                                         <input type="hidden" name="subscription" value="follow">
+                                        <button type="submit" class="btn btn-sm btn-outline btn-primary">&nbsp;&nbsp;Follow&nbsp;&nbsp;</button>
+                                    </form>
+                                    {% endif %}
                                 </td>
                             </tr>
                             {% endfor %}

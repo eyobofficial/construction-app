@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views import generic
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -27,6 +27,20 @@ class ProjectList(LoginRequiredMixin, generic.ListView):
 
     def get_queryset(self, *args, **kwargs):
         return self.model.my_projects.all().order_by('status')
+
+    def get(self, request, *args, **kwargs):
+        subscription = request.GET.get('subscription')
+        if subscription:
+            pk = int(request.GET['project'])
+            project = get_object_or_404(models.Project, pk=pk)
+            if subscription == 'follow':
+                project.project_followers.add(request.user)
+                project.save()
+
+            if subscription == 'unfollow':
+                project.project_followers.remove(request.user)
+                project.save()
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, *args, **kwargs):
         context = super(ProjectList, self).get_context_data(*args, **kwargs)
