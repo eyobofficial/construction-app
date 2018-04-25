@@ -121,6 +121,7 @@ class Notification(Base):
     """
     project = models.ForeignKey(
         'Project',
+        related_name='all_notifications',
         on_delete=models.CASCADE,
     )
     triggered_by = models.ForeignKey(
@@ -142,7 +143,7 @@ class Notification(Base):
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey('content_type', 'object_id')
+    content_object = GenericForeignKey()
 
     class Meta:
         ordering = ['-is_seen', '-updated_at', ]
@@ -322,29 +323,6 @@ class Project(Base):
 
     def __str__(self):
         return self.short_name
-
-    def save(self, *args, **kwargs):
-        is_new = self.pk is None
-        is_status_changed = self.tracker.has_changed('status')
-        super().save(*args, **kwargs)
-
-        if is_new:
-            subject = 'New Project Added - {}'.format(self.full_name)
-            message = 'A new project with the title {} has been added'.format(
-                self.full_name.title()
-            )
-            notify_list = CustomUser.objects.filter(is_active=True)
-        elif is_status_changed:
-            subject = '{} Project Status Updated'.format(self.short_name)
-            message = '{} project status has been updated to {}'.format(
-                self.short_name,
-                self.get_status_display()
-            )
-            notify_list = self.followers.filter(is_active=True)
-        else:
-            return
-        for user in notify_list:
-            self.add_notification(subject, message, user)
 
     def get_absolute_url(self):
         return reverse('dashboard:project-detail', args=[str(self.pk)])

@@ -5,5 +5,6 @@ class DashboardConfig(AppConfig):
     name = 'dashboard'
 
     def ready(self):
-        pass
-        # from .signals import create_user_notifications
+        # from .signals import project_status_notifications
+        from .signals import new_project_notifications
+
