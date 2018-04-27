@@ -6,6 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 from django.core.mail import EmailMessage, get_connection
 from django.conf import settings
+from django.utils import timezone
 from model_utils import FieldTracker
 from . import utils
 from . import managers
@@ -323,6 +324,20 @@ class Project(Base):
     def get_absolute_url(self):
         return reverse('dashboard:project-detail', args=[str(self.pk)])
 
+    @property
+    def completion_date(self, *args, **kwargs):
+        """
+        Returns the project completion date
+        """
+        return self.commencement_date + datetime.timedelta(days=self.period)
+
+    def get_days_left(self, *args, **kwargs):
+        """
+        Returns the number of days left to project completion date in
+        calendar days
+        """
+        return (self.completion_date - timezone.localdate()).days
+
     def add_notification(self, subject, message, notify_to, *args, **kwargs):
         triggered_by = kwargs.get('triggered_by')
         self.notifications.create(
@@ -332,13 +347,6 @@ class Project(Base):
             subject=subject,
             message=message,
         )
-
-    @property
-    def completion_date(self, *args, **kwargs):
-        """
-        Returns the project completion date
-        """
-        return self.commencement_date + datetime.timedelta(days=self.period)
 
     def get_status_label(self):
         """
@@ -380,11 +388,6 @@ class Schedule(Base):
     """
     Represents a construction working schedule
     """
-    PERIOD_CHOICE_OPTIONS = (
-        ('daily', 'Daily'),
-        ('weekly', 'Weekly'),
-        ('monthly', 'Monthly')
-    )
     project = models.ForeignKey(
         Project,
         related_name='schedules',
@@ -392,11 +395,6 @@ class Schedule(Base):
     )
     title = models.CharField('Schedule Title', max_length=120)
     description = models.TextField(null=True, blank=True)
-    period = models.CharField(
-        'Scheduled Period',
-        max_length=30,
-        choices=PERIOD_CHOICE_OPTIONS,
-    )
     is_active = models.BooleanField('Active Status', default=False)
 
     class Meta:
@@ -415,15 +413,14 @@ class Schedule(Base):
 
 class Plan(Base):
     """
-    Represents a planned amount for a period (i.e. period as defined
-    in the Scheduled model)
+    Represents a planned amount for a period (i.e. week)
     """
     schedule = models.ForeignKey(
         Schedule,
         related_name='plans',
         on_delete=models.CASCADE
     )
-    period_start_date = models.DateField()
+    start_date = models.DateField()
     amount = models.DecimalField(
         'Planned Amount',
         max_digits=12,
@@ -438,8 +435,8 @@ class Plan(Base):
     )
 
     class Meta:
-        ordering = ['schedule', 'period_start_date', ]
-        get_latest_by = ['-period_start_date', '-updated_at', ]
+        ordering = ['schedule', 'start_date', ]
+        get_latest_by = ['-start_date', '-updated_at', ]
         permissions = (
             ('admin_plan', 'Administer Plans'),
         )
@@ -447,15 +444,16 @@ class Plan(Base):
         verbose_name_plural = 'Schedule Plans'
 
     def __str__(self):
-        return '{} Plan for {}'.format(self.period_start_date, self.schedule)
+        return '{} Plan for {}'.format(self.start_date, self.schedule)
 
     def get_absolute_url(self, *args, **kwargs):
         return reverse('dashboard:plan-detail', args=[str(self.pk)])
 
-    def get_period_end_date(self, *args, **kwargs):
+    @property
+    def end_date(self, *args, **kwargs):
         pass
 
-    def get_period_number(self, *args, **kwargs):
+    def get_project_week(self, *args, **kwargs):
         pass
 
 

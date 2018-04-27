@@ -66,14 +66,14 @@ class PlanInline(admin.StackedInline):
     list_display = (
         'schedule_project',
         'schedule',
-        'period_start_date',
+        'start_date',
         'amount',
     )
 
 
 @admin.register(models.Schedule)
 class ScheduleAdmin(admin.ModelAdmin):
-    list_display = ('project', 'title', 'period', 'is_active', 'updated_at', )
+    list_display = ('project', 'title', 'is_active', 'updated_at', )
     list_filter = ('is_active', 'project', )
     search_fields = ('title', )
     inlines = (PlanInline, )
