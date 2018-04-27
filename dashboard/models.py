@@ -280,7 +280,6 @@ class Project(Base):
     )
     contract_amount = models.DecimalField(
         max_digits=16, decimal_places=2,
-        null=True, blank=True,
         help_text='Project contract amount in ETB (before VAT)',
     )
     signing_date = models.DateField(
@@ -291,13 +290,9 @@ class Project(Base):
         'Site Handover Date',
         null=True, blank=True,
     )
-    commencement_date = models.DateField(
-        'commencement Date',
-        null=True, blank=True,
-    )
+    commencement_date = models.DateField('commencement Date')
     period = models.PositiveIntegerField(
         'Contract Period',
-        null=True, blank=True,
         help_text='Project life time in calendar days'
     )
     created_by = models.ForeignKey(
@@ -308,11 +303,12 @@ class Project(Base):
     )
     notifications = GenericRelation(Notification)
 
+    # Field Tracker module
+    tracker = FieldTracker()
+
     # Custom Managers
     objects = models.Manager()
     my_projects = managers.ProjectManager()
-
-    tracker = FieldTracker()
 
     class Meta:
         ordering = ['status', '-updated_at', 'short_name', ]
@@ -337,13 +333,12 @@ class Project(Base):
             message=message,
         )
 
-    def get_original_completion_date(self, *args, **kwargs):
+    @property
+    def completion_date(self, *args, **kwargs):
         """
         Returns the project completion date
         """
-        if self.commencement_date and self.period:
-            return self.commencement_date + datetime.timedelta(days=self.period)
-        return
+        return self.commencement_date + datetime.timedelta(days=self.period)
 
     def get_status_label(self):
         """
