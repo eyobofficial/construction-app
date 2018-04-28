@@ -396,6 +396,8 @@ class Schedule(Base):
     title = models.CharField('Schedule Title', max_length=120)
     description = models.TextField(null=True, blank=True)
     is_active = models.BooleanField('Active Status', default=False)
+    start_date = models.DateField('Schedule Start Date')
+    end_date = models.DateField('Schedule End Date')
 
     class Meta:
         ordering = ['is_active', 'project', '-updated_at', ]
@@ -453,7 +455,7 @@ class Plan(Base):
     def end_date(self, *args, **kwargs):
         pass
 
-    def get_project_week(self, *args, **kwargs):
+    def get_week_number(self, *args, **kwargs):
         pass
 
 
