@@ -409,11 +409,24 @@ class Schedule(Base):
     def __str__(self):
         return self.title
 
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        super().save(*args, **kwargs)
+        if is_new:
+            n = 1
+            while n <= self.get_all_weeks_count():
+                self.plans.create(week=n)
+                n += 1
+
     def get_absolute_url(self, *args, **kwargs):
         return reverse('dashboard:schedule-detail', args=[str(self.pk)])
 
-    def get_week_count(self, *args, **kwargs):
-        pass
+    def get_all_weeks(self, *args, **kwargs):
+        return utils.weeks(self.start_date, self.end_date)
+
+    def get_all_weeks_count(self, *args, **kwargs):
+        return len(self.get_all_weeks())
+    get_all_weeks_count.short_description = 'No. of Weeks'
 
 
 class Plan(Base):
@@ -425,7 +438,7 @@ class Plan(Base):
         related_name='plans',
         on_delete=models.CASCADE
     )
-    week = models.PositiveSmallIntegerField('Week Number', unique=True)
+    week = models.PositiveSmallIntegerField('Week Number')
     amount = models.DecimalField(
         'Planned Amount',
         max_digits=12,
@@ -445,11 +458,14 @@ class Plan(Base):
         permissions = (
             ('admin_plan', 'Administer Plans'),
         )
+        unique_together = (
+            ('schedule', 'week'),
+        )
         verbose_name = 'Schedule Plan'
         verbose_name_plural = 'Schedule Plans'
 
     def __str__(self):
-        return '{} Plan for {}'.format(self.start_date, self.schedule)
+        return 'Week {} for {}'.format(self.week, self.schedule)
 
     def get_absolute_url(self, *args, **kwargs):
         return reverse('dashboard:plan-detail', args=[str(self.pk)])

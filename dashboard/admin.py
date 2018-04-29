@@ -64,16 +64,24 @@ class ProjectAdmin(admin.ModelAdmin):
 class PlanInline(admin.StackedInline):
     model = models.Plan
     list_display = (
+        'week',
         'schedule_project',
         'schedule',
-        'start_date',
         'amount',
     )
+    exclude = ('week', )
 
 
 @admin.register(models.Schedule)
 class ScheduleAdmin(admin.ModelAdmin):
-    list_display = ('project', 'title', 'is_active', 'updated_at', )
+    list_display = (
+        'project',
+        'title',
+        'is_active',
+        'get_all_weeks_count',
+        'updated_at',
+    )
+    list_display_links = ('title', )
     list_filter = ('is_active', 'project', )
     search_fields = ('title', )
     inlines = (PlanInline, )
