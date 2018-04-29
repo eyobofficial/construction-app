@@ -1,3 +1,10 @@
+from django.contrib.auth import get_user_model
+
+
+def get_phantom_user(username='Deleted'):
+    return get_user_model().objects.get_or_create(username=username)[0]
+
+
 def status_label(**kwargs):
     btn = kwargs.get('btn', 'btn-default')
     status_message = kwargs.get('status', 'Not Available')

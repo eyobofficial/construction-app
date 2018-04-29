@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
@@ -297,10 +298,9 @@ class Project(Base):
         help_text='Project life time in calendar days'
     )
     created_by = models.ForeignKey(
-        CustomUser,
+        settings.AUTH_USER_MODEL,
         related_name='projects',
-        null=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.SET(utils.get_phantom_user),
     )
     notifications = GenericRelation(Notification)
 
@@ -412,6 +412,9 @@ class Schedule(Base):
     def get_absolute_url(self, *args, **kwargs):
         return reverse('dashboard:schedule-detail', args=[str(self.pk)])
 
+    def get_week_count(self, *args, **kwargs):
+        pass
+
 
 class Plan(Base):
     """
@@ -422,7 +425,7 @@ class Plan(Base):
         related_name='plans',
         on_delete=models.CASCADE
     )
-    start_date = models.DateField()
+    week = models.PositiveIntegerField('Week Number', unique=True)
     amount = models.DecimalField(
         'Planned Amount',
         max_digits=12,
@@ -437,8 +440,8 @@ class Plan(Base):
     )
 
     class Meta:
-        ordering = ['schedule', 'start_date', ]
-        get_latest_by = ['-start_date', '-updated_at', ]
+        ordering = ['schedule', 'week', ]
+        get_latest_by = ['-updated_at', ]
         permissions = (
             ('admin_plan', 'Administer Plans'),
         )
@@ -451,11 +454,13 @@ class Plan(Base):
     def get_absolute_url(self, *args, **kwargs):
         return reverse('dashboard:plan-detail', args=[str(self.pk)])
 
-    @property
-    def end_date(self, *args, **kwargs):
+    def get_date_range(self, *args, **kwargs):
         pass
 
-    def get_week_number(self, *args, **kwargs):
+    def get_start_date(self, *args, **kwargs):
+        pass
+
+    def get_end_date(self, *args, **kwargs):
         pass
 
 
