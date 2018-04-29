@@ -14,6 +14,7 @@ class CustomUserAdmin(admin.ModelAdmin):
     )
     list_filter = ('is_active', )
     search_fields = ('email', 'username', 'first_name', 'last_name', )
+    filter_horizontal = ('projects_followed', 'projects_administered', )
 
 
 @admin.register(models.Config)
@@ -70,18 +71,18 @@ class PlanInline(admin.StackedInline):
         'amount',
     )
     exclude = ('week', )
+    filter_horizontal = ('activities', )
 
 
 @admin.register(models.Schedule)
 class ScheduleAdmin(admin.ModelAdmin):
     list_display = (
-        'project',
         'title',
+        'project',
         'is_active',
         'get_all_weeks_count',
         'updated_at',
     )
-    list_display_links = ('title', )
     list_filter = ('is_active', 'project', )
     search_fields = ('title', )
     inlines = (PlanInline, )
