@@ -425,7 +425,7 @@ class Plan(Base):
         related_name='plans',
         on_delete=models.CASCADE
     )
-    week = models.PositiveIntegerField('Week Number', unique=True)
+    week = models.PositiveSmallIntegerField('Week Number', unique=True)
     amount = models.DecimalField(
         'Planned Amount',
         max_digits=12,
