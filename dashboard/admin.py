@@ -89,4 +89,4 @@ class ScheduleAdmin(admin.ModelAdmin):
 
 @admin.register(models.Progress)
 class ProgressAdmin(admin.ModelAdmin):
-    list_display = ('plan', 'amount', )
+    list_display = ('project', 'week', 'amount', )

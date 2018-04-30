@@ -479,10 +479,13 @@ class Progress(Base):
     """
     Represents planned vs executed amount progress for a period
     """
-    plan = models.ForeignKey(
-        Plan,
-        related_name='progress_list',
+    project = models.ForeignKey(
+        Project,
+        related_name='progress',
         on_delete=models.CASCADE
+    )
+    week = models.PositiveIntegerField(
+        'Week no',
     )
     amount = models.DecimalField(
         'Executed Amount',
@@ -510,7 +513,8 @@ class Progress(Base):
     )
 
     class Meta:
-        ordering = ['plan', '-updated_at', ]
+        unique_together = [('project', 'week')]
+        ordering = ['project', 'week', '-updated_at', ]
         get_latest_by = ['-updated_at', ]
         permissions = (
             ('admin_progress', 'Administer Progress'),
