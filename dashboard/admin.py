@@ -64,14 +64,10 @@ class ProjectAdmin(admin.ModelAdmin):
 
 class PlanInline(admin.StackedInline):
     model = models.Plan
-    list_display = (
-        'week',
-        'schedule_project',
-        'schedule',
-        'amount',
-    )
-    exclude = ('week', )
+    fields = ('week', 'amount', 'activities', 'updated_at', )
+    readonly_fields = ('updated_at', )
     filter_horizontal = ('activities', )
+    extra = 0
 
 
 @admin.register(models.Schedule)
@@ -80,12 +76,15 @@ class ScheduleAdmin(admin.ModelAdmin):
         'title',
         'project',
         'is_active',
-        'get_all_weeks_count',
+        'no_of_weeks',
         'updated_at',
     )
     list_filter = ('is_active', 'project', )
     search_fields = ('title', )
     inlines = (PlanInline, )
+
+    def no_of_weeks(self, obj):
+        return obj.plans.count()
 
 
 @admin.register(models.Progress)

@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
@@ -17,10 +16,12 @@ import datetime
 
 class Base(models.Model):
     created_at = models.DateTimeField(
+        'Created date',
         auto_now_add=True,
         help_text='Record created date and time'
     )
     updated_at = models.DateTimeField(
+        'Last updated',
         auto_now=True,
         help_text='Record last updated date and time'
     )
@@ -414,19 +415,13 @@ class Schedule(Base):
         super().save(*args, **kwargs)
         if is_new:
             n = 1
-            while n <= self.get_all_weeks_count():
+            weeks_count = utils.weeks(self.start_date, self.end_date)
+            while n <= weeks_count:
                 self.plans.create(week=n)
                 n += 1
 
     def get_absolute_url(self, *args, **kwargs):
         return reverse('dashboard:schedule-detail', args=[str(self.pk)])
-
-    def get_all_weeks(self, *args, **kwargs):
-        return utils.weeks(self.start_date, self.end_date)
-
-    def get_all_weeks_count(self, *args, **kwargs):
-        return len(self.get_all_weeks())
-    get_all_weeks_count.short_description = 'No. of Weeks'
 
 
 class Plan(Base):
@@ -461,8 +456,8 @@ class Plan(Base):
         unique_together = (
             ('schedule', 'week'),
         )
-        verbose_name = 'Schedule Plan'
-        verbose_name_plural = 'Schedule Plans'
+        verbose_name = 'Weekly Plan'
+        verbose_name_plural = 'Weekly Plans'
 
     def __str__(self):
         return 'Week {} for {}'.format(self.week, self.schedule)
