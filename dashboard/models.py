@@ -415,7 +415,11 @@ class Schedule(Base):
         super().save(*args, **kwargs)
         if is_new:
             n = 1
-            weeks_count = utils.weeks(self.start_date, self.end_date)
+            scheduled_weeks = utils.Week(
+                start=self.start_date,
+                end=self.end_date
+            )
+            weeks_count = len(scheduled_weeks.weeks())
             while n <= weeks_count:
                 self.plans.create(week=n)
                 n += 1
@@ -479,13 +483,15 @@ class Progress(Base):
     """
     Represents planned vs executed amount progress for a period
     """
+    WEEK_CHOICES = None
+
     project = models.ForeignKey(
         Project,
         related_name='progress',
         on_delete=models.CASCADE
     )
     week = models.PositiveIntegerField(
-        'Week no',
+        'Project week No.',
     )
     amount = models.DecimalField(
         'Executed Amount',
@@ -521,7 +527,7 @@ class Progress(Base):
         )
 
     def __str__(self):
-        return 'Report for {}'.format(self.plan)
+        return 'Week {} progress report for {}'.format(self.week, self.project)
 
     def get_absolute_url(self, *args, **kwargs):
         return reverse('dashboard:report-detail', args=[str(self.pk)])
