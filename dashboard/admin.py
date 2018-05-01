@@ -88,24 +88,8 @@ class ScheduleAdmin(admin.ModelAdmin):
         return obj.plans.count()
 
 
-class ProgressForm(forms.ModelForm):
-    WEEK_CHOICE = (
-        ('Week 1', 1),
-        ('Week 2', 2),
-        ('Week 3', 3),
-    )
-    week = forms.ChoiceField(choices=WEEK_CHOICE)
-
-    class Meta:
-        model = models.Progress
-        fields = [
-            'project', 'week', 'amount',
-            'activities', 'description', 'slippage_reason', 'remark',
-        ]
-
-
 @admin.register(models.Progress)
 class ProgressAdmin(admin.ModelAdmin):
     list_display = ('project', 'week', 'amount', )
-    # form = ProgressForm
+    list_filter = ('project', )
     filter_horizontal = ('activities', )
